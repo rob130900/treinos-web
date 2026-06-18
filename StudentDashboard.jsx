@@ -1,6 +1,22 @@
 import { useEffect, useState } from 'react';
 import { api } from './api.js';
 import { useAuth } from './AuthContext.jsx';
+import ExerciseDemo from './ExerciseDemo.jsx';
+
+function Ring({ pct }) {
+  const r = 56, c = 2 * Math.PI * r;
+  const off = c - (pct / 100) * c;
+  return (
+    <div className="ring">
+      <svg width="132" height="132" viewBox="0 0 132 132">
+        <circle cx="66" cy="66" r={r} fill="none" stroke="#23262e" strokeWidth="11" />
+        <circle cx="66" cy="66" r={r} fill="none" stroke="#ff6a00" strokeWidth="11" strokeLinecap="round"
+          strokeDasharray={c} strokeDashoffset={off} transform="rotate(-90 66 66)" style={{ transition: 'stroke-dashoffset .6s' }} />
+      </svg>
+      <div className="pct"><b>{pct}%</b><small>da sua meta</small></div>
+    </div>
+  );
+}
 
 export default function StudentDashboard() {
   const { user, logout } = useAuth();
@@ -41,54 +57,74 @@ export default function StudentDashboard() {
   return (
     <div className="layout">
       <header className="topbar">
-        <div><strong>Meus Treinos</strong><span className="muted"> — {user.name}</span></div>
-        <button className="btn-ghost" onClick={logout}>Sair</button>
-      </header>
-      {error && <div className="alert">{error}</div>}
-      <section className="card">
-        <h2>Meu Progresso</h2>
-        <div className="progress-stats">
-          <div><strong>{progress.completed}</strong><small>Concluidos</small></div>
-          <div><strong>{progress.total}</strong><small>Total</small></div>
-          <div><strong>{pct}%</strong><small>Aproveitamento</small></div>
+        <span className="kivo" style={{ fontSize: 22 }}>KI<span className="v">V</span>O</span>
+        <div className="row">
+          <span className="muted" style={{ fontSize: 13 }}>{user.name}</span>
+          <button className="btn-ghost" onClick={logout}>Sair</button>
         </div>
-        <div className="progress-bar"><div style={{ width: `${pct}%` }} /></div>
-      </section>
+      </header>
+
+      {error && <div className="alert">{error}</div>}
+
       <section className="card">
-        <h2>Treinos</h2>
+        <div className="section-title">Seu progresso</div>
+        <div className="progress-hero">
+          <Ring pct={pct} />
+          <div className="stat-grid">
+            <div className="stat"><b>{progress.completed}</b><small>Concluídos</small></div>
+            <div className="stat"><b>{progress.total}</b><small>Total</small></div>
+            <div className="stat"><b>{progress.total - progress.completed}</b><small>Pendentes</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="section-title">Seus treinos</div>
         <div className="list">
           {workouts.map((w) => (
             <div key={w.id} className={`workout-item ${w.completed ? 'done' : ''}`}>
-              <div style={{ flex: 1 }}>
-                <button className="link-title" onClick={() => openDetails(w)}><strong>{w.title}</strong></button>
-                <div className="muted">
-                  {w.scheduled_date ? new Date(w.scheduled_date).toLocaleDateString('pt-BR') : 'Sem data'}
-                  {' · '}{w.completed ? '✅ Concluido' : '⏳ Pendente'}
+              <div className="spread">
+                <button className="link-title" onClick={() => openDetails(w)}>
+                  {w.title} <span style={{ fontSize: 13, color: 'var(--dim)' }}>{openId === w.id ? '▴' : '▾'}</span>
+                </button>
+                <div className="row">
+                  <span className={`badge ${w.completed ? 'ok' : 'pend'}`}>{w.completed ? 'Concluído' : 'Pendente'}</span>
+                  <button className={w.completed ? 'btn-ghost' : 'btn-sm'} onClick={() => toggle(w)}>
+                    {w.completed ? 'Desfazer' : 'Concluir'}
+                  </button>
                 </div>
-                {openId === w.id && details[w.id] && (
-                  <div className="details">
-                    {details[w.id].description && <p>{details[w.id].description}</p>}
-                    {details[w.id].exercises?.length > 0 ? (
-                      <table className="ex-table">
-                        <thead><tr><th>Exercicio</th><th>Series</th><th>Reps</th><th>Carga</th></tr></thead>
-                        <tbody>
-                          {details[w.id].exercises.map((ex) => (
-                            <tr key={ex.id}>
-                              <td>{ex.name}</td><td>{ex.sets || '-'}</td><td>{ex.reps || '-'}</td><td>{ex.weight || '-'}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    ) : <p className="muted">Sem exercicios cadastrados.</p>}
-                  </div>
-                )}
               </div>
-              <button className={w.completed ? 'btn-ghost' : 'btn-sm'} onClick={() => toggle(w)}>
-                {w.completed ? 'Desfazer' : 'Concluir'}
-              </button>
+              <div className="dim" style={{ fontSize: 12, marginTop: 6 }}>
+                {w.scheduled_date ? new Date(w.scheduled_date).toLocaleDateString('pt-BR') : 'Sem data'}
+              </div>
+
+              {openId === w.id && details[w.id] && (
+                <div style={{ marginTop: 12 }}>
+                  {details[w.id].description && <p className="muted" style={{ fontSize: 14 }}>{details[w.id].description}</p>}
+                  {details[w.id].exercises?.length ? details[w.id].exercises.map((ex) => (
+                    <div className="ex-detail" key={ex.id}>
+                      <ExerciseDemo img1={ex.image_url} img2={ex.image_url2} />
+                      <div className="meta">
+                        <div style={{ fontWeight: 700, fontSize: 15 }}>{ex.name}</div>
+                        {ex.muscle_group && <div className="mg">{ex.muscle_group}</div>}
+                        <div style={{ marginTop: 8 }}>
+                          {ex.sets && <span className="pill"><b>{ex.sets}</b> séries</span>}
+                          {ex.reps && <span className="pill"><b>{ex.reps}</b> reps</span>}
+                          {ex.weight && <span className="pill">carga <b>{ex.weight}</b></span>}
+                        </div>
+                        {ex.instructions && (
+                          <ol className="instr">
+                            {ex.instructions.split('\n').filter(Boolean).slice(0, 5).map((s, i) => <li key={i}>{s}</li>)}
+                          </ol>
+                        )}
+                      </div>
+                    </div>
+                  )) : <p className="muted">Sem exercícios cadastrados.</p>}
+                </div>
+              )}
             </div>
           ))}
-          {workouts.length === 0 && <p className="muted">Voce ainda nao tem treinos. Fale com seu personal.</p>}
+          {workouts.length === 0 && <p className="muted">Você ainda não tem treinos. Fale com seu personal.</p>}
         </div>
       </section>
     </div>

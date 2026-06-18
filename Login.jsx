@@ -28,17 +28,25 @@ export default function Login() {
 
   return (
     <div className="auth-wrap">
-      <form className="card auth-card" onSubmit={handleSubmit}>
-        <h1>Entrar</h1>
-        <p className="muted">App de Treinos</p>
+      <form className="auth-card" onSubmit={handleSubmit}>
+        <div className="auth-head">
+          <div className="kivo">KI<span className="v">V</span>O</div>
+          <div className="kivo-tag" style={{ marginTop: 8 }}>Treine. <b>Evolua.</b> Repita.</div>
+        </div>
+        <h1 style={{ fontSize: 22, textAlign: 'center', margin: '22px 0 4px' }}>Entrar</h1>
+
         {error && <div className="alert">{error}</div>}
+
         <label>Email</label>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <label>Senha</label>
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button className="btn" disabled={loading}>{loading ? 'Entrando...' : 'Entrar'}</button>
-        <p className="muted center" style={{ marginTop: 16 }}>
-          Nao tem conta? <Link to="/cadastro">Cadastre-se</Link>
+
+        <div style={{ marginTop: 20 }}>
+          <button className="btn" disabled={loading}>{loading ? 'Entrando...' : 'Começar agora'}</button>
+        </div>
+        <p className="muted center" style={{ marginTop: 18, fontSize: 14 }}>
+          Não tem conta? <Link to="/cadastro">Cadastre-se</Link>
         </p>
       </form>
     </div>

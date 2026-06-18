@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from './api.js';
 import { useAuth } from './AuthContext.jsx';
+import ExercisePicker from './ExercisePicker.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -24,48 +25,68 @@ export default function TrainerDashboard() {
   return (
     <div className="layout">
       <header className="topbar">
-        <div><strong>Painel do Personal</strong><span className="muted"> — {user.name}</span></div>
-        <button className="btn-ghost" onClick={logout}>Sair</button>
+        <div className="row" style={{ gap: 12 }}>
+          <span className="kivo" style={{ fontSize: 22 }}>KI<span className="v">V</span>O</span>
+          <span className="dim" style={{ fontSize: 13 }}>Painel do Personal</span>
+        </div>
+        <div className="row">
+          <span className="muted" style={{ fontSize: 13 }}>{user.name}</span>
+          <button className="btn-ghost" onClick={logout}>Sair</button>
+        </div>
       </header>
+
       {error && <div className="alert">{error}</div>}
+
       <div className="grid">
         <section className="card">
           <h2>Meus Alunos</h2>
+          <div className="sub">Cadastre e acompanhe a evolução</div>
           <AddStudent onAdded={loadStudents} setError={setError} />
           <div className="list">
             <button className={`student-item ${!selectedStudent ? 'active' : ''}`} onClick={() => selectStudent(null)}>
-              Todos os treinos
+              <div className="nm">Todos os treinos</div>
             </button>
             {students.map((s) => (
               <button key={s.id} className={`student-item ${selectedStudent?.id === s.id ? 'active' : ''}`} onClick={() => selectStudent(s)}>
-                <div>{s.name}</div>
-                <small className="muted">{s.completed_workouts}/{s.total_workouts} treinos concluidos</small>
+                <div className="row">
+                  <div className="avatar">{s.name.charAt(0).toUpperCase()}</div>
+                  <div>
+                    <div className="nm">{s.name}</div>
+                    <small className="muted">{s.completed_workouts}/{s.total_workouts} treinos concluídos</small>
+                  </div>
+                </div>
               </button>
             ))}
             {students.length === 0 && <p className="muted">Nenhum aluno ainda.</p>}
           </div>
         </section>
+
         <section className="card">
           <h2>{selectedStudent ? `Treinos de ${selectedStudent.name}` : 'Todos os treinos'}</h2>
+          <div className="sub">Monte treinos usando a biblioteca de exercícios</div>
           {selectedStudent
             ? <NewWorkout student={selectedStudent} onCreated={() => loadWorkouts(selectedStudent.id)} setError={setError} />
-            : <p className="muted">Selecione um aluno a esquerda para criar um treino.</p>}
+            : <p className="muted">Selecione um aluno à esquerda para criar um treino.</p>}
           <div className="list">
             {workouts.map((w) => (
               <div key={w.id} className="workout-item">
-                <div>
-                  <strong>{w.title}</strong>
-                  {w.student_name && <span className="muted"> — {w.student_name}</span>}
-                  <div className="muted">
-                    {w.scheduled_date ? new Date(w.scheduled_date).toLocaleDateString('pt-BR') : 'Sem data'}
-                    {' · '}{w.completed ? '✅ Concluido' : '⏳ Pendente'}
+                <div className="spread">
+                  <div>
+                    <strong style={{ fontSize: 15 }}>{w.title}</strong>
+                    {w.student_name && <span className="dim" style={{ fontSize: 13 }}> · {w.student_name}</span>}
+                    <div className="dim" style={{ fontSize: 12, marginTop: 4 }}>
+                      {w.scheduled_date ? new Date(w.scheduled_date).toLocaleDateString('pt-BR') : 'Sem data'}
+                    </div>
+                  </div>
+                  <div className="row">
+                    <span className={`badge ${w.completed ? 'ok' : 'pend'}`}>{w.completed ? 'Concluído' : 'Pendente'}</span>
+                    <button className="btn-ghost danger" onClick={async () => {
+                      if (!confirm('Excluir este treino?')) return;
+                      await api.deleteWorkout(w.id);
+                      loadWorkouts(selectedStudent?.id);
+                    }}>Excluir</button>
                   </div>
                 </div>
-                <button className="btn-ghost danger" onClick={async () => {
-                  if (!confirm('Excluir este treino?')) return;
-                  await api.deleteWorkout(w.id);
-                  loadWorkouts(selectedStudent?.id);
-                }}>Excluir</button>
               </div>
             ))}
             {workouts.length === 0 && <p className="muted">Nenhum treino ainda.</p>}
@@ -91,7 +112,7 @@ function AddStudent({ onAdded, setError }) {
     } catch (err) { setError(err.message); } finally { setLoading(false); }
   }
 
-  if (!open) return <button className="btn-sm" onClick={() => setOpen(true)}>+ Cadastrar aluno</button>;
+  if (!open) return <button className="btn-sm" style={{ marginTop: 12 }} onClick={() => setOpen(true)}>+ Cadastrar aluno</button>;
 
   return (
     <form className="inline-form" onSubmit={submit}>
@@ -108,55 +129,74 @@ function AddStudent({ onAdded, setError }) {
 
 function NewWorkout({ student, onCreated, setError }) {
   const [open, setOpen] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
-  const [exercises, setExercises] = useState([{ name: '', sets: '', reps: '', weight: '' }]);
+  const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  function updateEx(i, field, value) { setExercises((arr) => arr.map((e, idx) => (idx === i ? { ...e, [field]: value } : e))); }
-  function addEx() { setExercises((arr) => [...arr, { name: '', sets: '', reps: '', weight: '' }]); }
-  function removeEx(i) { setExercises((arr) => arr.filter((_, idx) => idx !== i)); }
+  function addFromLibrary(list) {
+    setExercises((cur) => [...cur, ...list]);
+    setShowPicker(false);
+  }
+  function updEx(i, field, value) {
+    setExercises((arr) => arr.map((e, idx) => (idx === i ? { ...e, [field]: value } : e)));
+  }
+  function rmEx(i) { setExercises((arr) => arr.filter((_, idx) => idx !== i)); }
 
   async function submit(e) {
     e.preventDefault();
+    if (exercises.length === 0) { setError('Adicione ao menos um exercício da biblioteca.'); return; }
     setLoading(true); setError('');
     try {
       await api.createWorkout({
         student_id: student.id, title, description, scheduled_date: date || null,
-        exercises: exercises.filter((ex) => ex.name.trim()).map((ex) => ({
-          name: ex.name, sets: ex.sets ? Number(ex.sets) : null, reps: ex.reps || null, weight: ex.weight || null,
+        exercises: exercises.map((ex) => ({
+          ...ex,
+          sets: ex.sets ? Number(ex.sets) : null,
         })),
       });
-      setTitle(''); setDescription(''); setDate('');
-      setExercises([{ name: '', sets: '', reps: '', weight: '' }]);
+      setTitle(''); setDescription(''); setDate(''); setExercises([]);
       setOpen(false); onCreated();
     } catch (err) { setError(err.message); } finally { setLoading(false); }
   }
 
-  if (!open) return <button className="btn-sm" onClick={() => setOpen(true)}>+ Novo treino</button>;
+  if (!open) return <button className="btn-sm" style={{ marginTop: 12 }} onClick={() => setOpen(true)}>+ Novo treino</button>;
 
   return (
-    <form className="inline-form" onSubmit={submit}>
-      <input placeholder="Titulo (ex: Treino A - Peito e Triceps)" value={title} onChange={(e) => setTitle(e.target.value)} required />
-      <textarea placeholder="Observacoes (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} />
-      <label className="muted">Data (opcional)</label>
-      <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-      <div className="muted" style={{ marginTop: 8 }}>Exercicios:</div>
-      {exercises.map((ex, i) => (
-        <div className="ex-row" key={i}>
-          <input placeholder="Exercicio" value={ex.name} onChange={(e) => updateEx(i, 'name', e.target.value)} />
-          <input placeholder="Series" value={ex.sets} style={{ width: 70 }} onChange={(e) => updateEx(i, 'sets', e.target.value)} />
-          <input placeholder="Reps" value={ex.reps} style={{ width: 80 }} onChange={(e) => updateEx(i, 'reps', e.target.value)} />
-          <input placeholder="Carga" value={ex.weight} style={{ width: 80 }} onChange={(e) => updateEx(i, 'weight', e.target.value)} />
-          {exercises.length > 1 && <button type="button" className="btn-ghost danger" onClick={() => removeEx(i)}>×</button>}
+    <>
+      {showPicker && <ExercisePicker onClose={() => setShowPicker(false)} onConfirm={addFromLibrary} />}
+      <form className="inline-form" onSubmit={submit}>
+        <input placeholder="Título (ex: Treino A — Peito e Tríceps)" value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <textarea placeholder="Observações (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} />
+        <label style={{ margin: '4px 0 0' }}>Data (opcional)</label>
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+
+        <button type="button" className="btn-outline" style={{ marginTop: 6 }} onClick={() => setShowPicker(true)}>
+          + Adicionar exercícios da biblioteca ({exercises.length})
+        </button>
+
+        {exercises.map((ex, i) => (
+          <div className="picked" key={i}>
+            <div className="thumb"><img src={ex.image_url} alt={ex.name} loading="lazy" /></div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ex.name}</div>
+              <div className="ex-row" style={{ marginTop: 6 }}>
+                <input className="mini" placeholder="Séries" value={ex.sets || ''} onChange={(e) => updEx(i, 'sets', e.target.value)} />
+                <input className="mini" placeholder="Reps" value={ex.reps || ''} onChange={(e) => updEx(i, 'reps', e.target.value)} />
+                <input className="mini" placeholder="Carga" value={ex.weight || ''} onChange={(e) => updEx(i, 'weight', e.target.value)} />
+              </div>
+            </div>
+            <button type="button" className="btn-ghost danger" onClick={() => rmEx(i)}>✕</button>
+          </div>
+        ))}
+
+        <div className="row" style={{ marginTop: 6 }}>
+          <button className="btn-sm" disabled={loading}>{loading ? 'Salvando...' : 'Criar treino'}</button>
+          <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>Cancelar</button>
         </div>
-      ))}
-      <button type="button" className="btn-ghost" onClick={addEx}>+ Adicionar exercicio</button>
-      <div className="row">
-        <button className="btn-sm" disabled={loading}>{loading ? 'Salvando...' : 'Criar treino'}</button>
-        <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>Cancelar</button>
-      </div>
-    </form>
+      </form>
+    </>
   );
 }

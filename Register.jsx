@@ -10,9 +10,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  function update(field, value) {
-    setForm((f) => ({ ...f, [field]: value }));
-  }
+  function update(field, value) { setForm((f) => ({ ...f, [field]: value })); }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -31,10 +29,15 @@ export default function Register() {
 
   return (
     <div className="auth-wrap">
-      <form className="card auth-card" onSubmit={handleSubmit}>
-        <h1>Criar conta</h1>
-        <p className="muted">App de Treinos</p>
+      <form className="auth-card" onSubmit={handleSubmit}>
+        <div className="auth-head">
+          <div className="kivo">KI<span className="v">V</span>O</div>
+          <div className="kivo-tag" style={{ marginTop: 8 }}>Treine. <b>Evolua.</b> Repita.</div>
+        </div>
+        <h1 style={{ fontSize: 22, textAlign: 'center', margin: '22px 0 4px' }}>Criar conta</h1>
+
         {error && <div className="alert">{error}</div>}
+
         <label>Nome</label>
         <input value={form.name} onChange={(e) => update('name', e.target.value)} required />
         <label>Email</label>
@@ -46,9 +49,12 @@ export default function Register() {
           <option value="trainer">Personal Trainer</option>
           <option value="student">Aluno</option>
         </select>
-        <button className="btn" disabled={loading}>{loading ? 'Criando...' : 'Criar conta'}</button>
-        <p className="muted center" style={{ marginTop: 16 }}>
-          Ja tem conta? <Link to="/login">Entrar</Link>
+
+        <div style={{ marginTop: 20 }}>
+          <button className="btn" disabled={loading}>{loading ? 'Criando...' : 'Criar conta'}</button>
+        </div>
+        <p className="muted center" style={{ marginTop: 18, fontSize: 14 }}>
+          Já tem conta? <Link to="/login">Entrar</Link>
         </p>
       </form>
     </div>
