@@ -1,0 +1,49 @@
+:root {
+  --bg: #0f1115; --card: #1a1d24; --card2: #222631; --text: #e8eaed; --muted: #9aa0aa;
+  --primary: #4f7cff; --primary-dark: #3a63d8; --danger: #ff5d5d; --green: #2ec27e; --border: #2b2f3a;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg); color: var(--text); }
+a { color: var(--primary); text-decoration: none; }
+h1, h2 { margin: 0 0 12px; }
+.center { text-align: center; padding: 40px; }
+.muted { color: var(--muted); font-size: 14px; }
+.row { display: flex; gap: 8px; align-items: center; }
+.auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.auth-card { width: 100%; max-width: 380px; }
+.auth-card label { display: block; margin: 12px 0 4px; font-size: 14px; }
+.layout { max-width: 1080px; margin: 0 auto; padding: 16px; }
+.topbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--card); border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border); }
+.grid { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
+@media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+input, select, textarea { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card2); color: var(--text); font-size: 14px; font-family: inherit; }
+textarea { min-height: 60px; resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+.btn { width: 100%; margin-top: 18px; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.btn:hover { background: var(--primary-dark); }
+.btn:disabled { opacity: .6; cursor: default; }
+.btn-sm { padding: 8px 14px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; }
+.btn-ghost { padding: 8px 12px; background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 14px; }
+.btn-ghost:hover { background: var(--card2); }
+.btn-ghost.danger, .danger { color: var(--danger); }
+.alert { background: rgba(255,93,93,.12); color: var(--danger); border: 1px solid rgba(255,93,93,.3); padding: 10px 12px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; }
+.list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.student-item { text-align: left; padding: 12px; border-radius: 8px; background: var(--card2); border: 1px solid var(--border); color: var(--text); cursor: pointer; }
+.student-item.active { border-color: var(--primary); }
+.workout-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 12px; border-radius: 8px; background: var(--card2); border: 1px solid var(--border); }
+.workout-item.done { border-color: var(--green); }
+.link-title { background: none; border: none; color: var(--text); cursor: pointer; padding: 0; font-size: 15px; text-align: left; }
+.link-title:hover { color: var(--primary); }
+.inline-form { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; padding: 12px; background: var(--card2); border-radius: 8px; border: 1px solid var(--border); }
+.ex-row { display: flex; gap: 6px; align-items: center; }
+.progress-stats { display: flex; gap: 24px; margin-bottom: 12px; }
+.progress-stats div { display: flex; flex-direction: column; }
+.progress-stats strong { font-size: 26px; color: var(--primary); }
+.progress-stats small { color: var(--muted); }
+.progress-bar { height: 10px; background: var(--card2); border-radius: 6px; overflow: hidden; }
+.progress-bar div { height: 100%; background: var(--green); transition: width .3s; }
+.details { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.ex-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ex-table th, .ex-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.ex-table th { color: var(--muted); font-weight: 500; }
