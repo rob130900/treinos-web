@@ -41,6 +41,13 @@ export const api = {
   uncompleteExercise: (wid, exId) => request(`/api/workouts/${wid}/exercises/${exId}/complete`, { method: 'DELETE' }),
   myProgress: () => request('/api/workouts/me/progress'),
   dashboard: () => request('/api/workouts/me/dashboard'),
+  exportSql: async () => {
+    const res = await fetch(`${BASE}/api/export`, {
+      headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},
+    });
+    if (!res.ok) throw new Error('Erro ao gerar backup.');
+    return res.text();
+  },
 };
 
 export { BASE };

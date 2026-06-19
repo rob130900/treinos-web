@@ -22,6 +22,20 @@ export default function TrainerDashboard() {
 
   function selectStudent(s) { setSelectedStudent(s); loadWorkouts(s?.id); }
 
+  const [exporting, setExporting] = useState(false);
+  async function downloadBackup() {
+    setExporting(true); setError('');
+    try {
+      const sql = await api.exportSql();
+      const blob = new Blob([sql], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'kivo-backup.sql';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) { setError(err.message); } finally { setExporting(false); }
+  }
+
   return (
     <div className="layout">
       <header className="topbar">
@@ -30,6 +44,9 @@ export default function TrainerDashboard() {
           <span className="dim" style={{ fontSize: 13 }}>Painel do Personal</span>
         </div>
         <div className="row">
+          <button className="btn-ghost" onClick={downloadBackup} disabled={exporting} title="Baixar todos os dados em SQL (backup / migração)">
+            {exporting ? 'Gerando...' : '⬇ Backup'}
+          </button>
           <span className="muted" style={{ fontSize: 13 }}>{user.name}</span>
           <button className="btn-ghost" onClick={logout}>Sair</button>
         </div>
