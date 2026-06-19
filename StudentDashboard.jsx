@@ -105,23 +105,24 @@ export default function StudentDashboard() {
                   {details[w.id].description && <p className="muted" style={{ fontSize: 14 }}>{details[w.id].description}</p>}
                   {details[w.id].exercises?.length ? details[w.id].exercises.map((ex) => (
                     <div className="ex-detail" key={ex.id}>
-                      <ExerciseDemo img1={ex.image_url} img2={ex.image_url2} />
+                      <button className="ex-thumb" onClick={() => ex.video_id && setVideo({ id: ex.video_id, title: ex.name })}>
+                        <ExerciseDemo img1={ex.image_url} img2={ex.image_url2} />
+                        {ex.video_id && <span className="play-mini">▶</span>}
+                      </button>
                       <div className="meta">
-                        <div style={{ fontWeight: 700, fontSize: 15 }}>{ex.name}</div>
+                        <div style={{ fontWeight: 700, fontSize: 15, lineHeight: 1.2 }}>{ex.name}</div>
                         {ex.muscle_group && <div className="mg">{ex.muscle_group}</div>}
-                        <div style={{ marginTop: 8 }}>
-                          {ex.sets && <span className="pill"><b>{ex.sets}</b> séries</span>}
-                          {ex.reps && <span className="pill"><b>{ex.reps}</b> reps</span>}
-                          {ex.weight && <span className="pill">carga <b>{ex.weight}</b></span>}
+                        <div className="dim" style={{ fontSize: 13, marginTop: 5 }}>
+                          {[ex.sets && `${ex.sets} séries`, ex.reps && `${ex.reps} reps`, ex.weight && `carga ${ex.weight}`].filter(Boolean).join('  ·  ')}
                         </div>
                         {ex.video_id && (
-                          <button className="btn-video" onClick={() => setVideo({ id: ex.video_id, title: ex.name })}>
-                            <span className="vicon">▶</span> Ver execução em vídeo
+                          <button className="btn-video sm" onClick={() => setVideo({ id: ex.video_id, title: ex.name })}>
+                            <span className="vicon">▶</span> Ver execução
                           </button>
                         )}
                         {ex.instructions && (
                           <ol className="instr">
-                            {ex.instructions.split('\n').filter(Boolean).slice(0, 5).map((s, i) => <li key={i}>{s}</li>)}
+                            {ex.instructions.split('\n').filter(Boolean).slice(0, 3).map((s, i) => <li key={i}>{s}</li>)}
                           </ol>
                         )}
                       </div>
