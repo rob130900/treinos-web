@@ -176,3 +176,21 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
 .picked .thumb img { width: 100%; height: 100%; object-fit: cover; }
 .picked input { padding: 8px; text-align: center; }
 .mini { width: 58px; }
+
+/* ---------- Video ---------- */
+.vbadge { position: absolute; top: 8px; right: 8px; background: var(--orange); color: #111;
+  font-size: 10px; font-weight: 800; padding: 3px 7px; border-radius: 6px; letter-spacing: .03em; }
+.vicon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px;
+  background: var(--orange); color: #111; border-radius: 50%; font-size: 9px; }
+.btn-video { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 9px 16px;
+  background: var(--orange-soft); color: var(--orange); border: 1px solid var(--orange); border-radius: 10px;
+  font-weight: 800; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: .03em; }
+.btn-video:hover { background: var(--orange); color: #111; }
+.btn-video .vicon { width: 16px; height: 16px; }
+
+.video-modal { width: 100%; max-width: 760px; background: var(--bg2); border: 1px solid var(--line);
+  border-radius: 16px; overflow: hidden; }
+.video-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.video-frame { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; }
+.video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); }

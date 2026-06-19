@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { EXERCISES, GROUPS } from './exerciseLibrary.js';
+import { EXERCISES, GROUPS, VIDEOS } from './exerciseLibrary.js';
 
 export default function ExercisePicker({ onClose, onConfirm }) {
   const [q, setQ] = useState('');
@@ -34,6 +34,7 @@ export default function ExercisePicker({ onClose, onConfirm }) {
       muscle_group: groupLabel(ex.group),
       image_url: ex.images?.[0] || null,
       image_url2: ex.images?.[1] || null,
+      video_id: VIDEOS[ex.id] || null,
       instructions: (ex.instructions || []).join('\n') || null,
       sets: sets ? Number(sets) : null,
       reps: reps || null,
@@ -92,7 +93,10 @@ export default function ExercisePicker({ onClose, onConfirm }) {
               return (
                 <div key={ex.id} className="ex-card" onClick={() => toggle(ex)}
                   style={sel ? { borderColor: 'var(--orange)', boxShadow: '0 0 0 1px var(--orange) inset' } : null}>
-                  <div className="demo"><img src={ex.images?.[0]} alt={ex.name} loading="lazy" /></div>
+                  <div className="demo">
+                    <img src={ex.images?.[0]} alt={ex.name} loading="lazy" />
+                    {VIDEOS[ex.id] && <span className="vbadge">▶ vídeo</span>}
+                  </div>
                   <div className="body">
                     <div className="nm">{ex.name}</div>
                     <div className="mg">{GROUPS.find((g) => g.key === ex.group)?.label}{sel ? ' · ✓ adicionado' : ''}</div>

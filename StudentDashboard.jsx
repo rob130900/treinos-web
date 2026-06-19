@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api.js';
 import { useAuth } from './AuthContext.jsx';
 import ExerciseDemo from './ExerciseDemo.jsx';
+import VideoModal from './VideoModal.jsx';
 
 function Ring({ pct }) {
   const r = 56, c = 2 * Math.PI * r;
@@ -25,6 +26,7 @@ export default function StudentDashboard() {
   const [error, setError] = useState('');
   const [openId, setOpenId] = useState(null);
   const [details, setDetails] = useState({});
+  const [video, setVideo] = useState(null);
 
   async function load() {
     try {
@@ -112,6 +114,11 @@ export default function StudentDashboard() {
                           {ex.reps && <span className="pill"><b>{ex.reps}</b> reps</span>}
                           {ex.weight && <span className="pill">carga <b>{ex.weight}</b></span>}
                         </div>
+                        {ex.video_id && (
+                          <button className="btn-video" onClick={() => setVideo({ id: ex.video_id, title: ex.name })}>
+                            <span className="vicon">▶</span> Ver execução em vídeo
+                          </button>
+                        )}
                         {ex.instructions && (
                           <ol className="instr">
                             {ex.instructions.split('\n').filter(Boolean).slice(0, 5).map((s, i) => <li key={i}>{s}</li>)}
@@ -127,6 +134,8 @@ export default function StudentDashboard() {
           {workouts.length === 0 && <p className="muted">Você ainda não tem treinos. Fale com seu personal.</p>}
         </div>
       </section>
+
+      {video && <VideoModal videoId={video.id} title={video.title} onClose={() => setVideo(null)} />}
     </div>
   );
 }
