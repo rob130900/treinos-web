@@ -180,6 +180,11 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
 /* ---------- Video ---------- */
 .vbadge { position: absolute; top: 8px; right: 8px; background: var(--orange); color: #111;
   font-size: 10px; font-weight: 800; padding: 3px 7px; border-radius: 6px; letter-spacing: .03em; }
+.play-ov { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 42px; height: 42px; border-radius: 50%; border: 2px solid #fff; cursor: pointer;
+  background: rgba(255,106,0,.95); color: #111; font-size: 15px; font-weight: 900; padding-left: 3px;
+  display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(0,0,0,.5); transition: transform .1s; }
+.play-ov:hover { transform: translate(-50%, -50%) scale(1.12); }
 .vicon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px;
   background: var(--orange); color: #111; border-radius: 50%; font-size: 9px; }
 .btn-video { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 9px 16px;
