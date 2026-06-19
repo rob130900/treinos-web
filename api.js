@@ -34,9 +34,13 @@ export const api = {
   listWorkouts: (studentId) => request(`/api/workouts${studentId ? `?student_id=${studentId}` : ''}`),
   getWorkout: (id) => request(`/api/workouts/${id}`),
   deleteWorkout: (id) => request(`/api/workouts/${id}`, { method: 'DELETE' }),
-  completeWorkout: (id) => request(`/api/workouts/${id}/complete`, { method: 'POST' }),
+  completeWorkout: (id, duration) =>
+    request(`/api/workouts/${id}/complete`, { method: 'POST', body: { duration_seconds: duration ?? null } }),
   uncompleteWorkout: (id) => request(`/api/workouts/${id}/complete`, { method: 'DELETE' }),
+  completeExercise: (wid, exId) => request(`/api/workouts/${wid}/exercises/${exId}/complete`, { method: 'POST' }),
+  uncompleteExercise: (wid, exId) => request(`/api/workouts/${wid}/exercises/${exId}/complete`, { method: 'DELETE' }),
   myProgress: () => request('/api/workouts/me/progress'),
+  dashboard: () => request('/api/workouts/me/dashboard'),
 };
 
 export { BASE };

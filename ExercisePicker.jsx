@@ -21,7 +21,7 @@ export default function ExercisePicker({ onClose, onConfirm }) {
     setPicked((p) => {
       const next = { ...p };
       if (next[ex.id]) delete next[ex.id];
-      else next[ex.id] = { ex, sets: '3', reps: '12', weight: '' };
+      else next[ex.id] = { ex, sets: '3', reps: '12', weight: '', rest: '60' };
       return next;
     });
   }
@@ -31,7 +31,7 @@ export default function ExercisePicker({ onClose, onConfirm }) {
 
   function confirm() {
     const groupLabel = (k) => GROUPS.find((g) => g.key === k)?.label || '';
-    const list = Object.values(picked).map(({ ex, sets, reps, weight }) => ({
+    const list = Object.values(picked).map(({ ex, sets, reps, weight, rest }) => ({
       name: ex.name,
       muscle_group: groupLabel(ex.group),
       image_url: ex.images?.[0] || null,
@@ -41,6 +41,7 @@ export default function ExercisePicker({ onClose, onConfirm }) {
       sets: sets ? Number(sets) : null,
       reps: reps || null,
       weight: weight || null,
+      rest_seconds: rest ? Number(rest) : 60,
     }));
     onConfirm(list);
   }
@@ -73,7 +74,7 @@ export default function ExercisePicker({ onClose, onConfirm }) {
           {pickedArr.length > 0 && (
             <div style={{ marginBottom: 18 }}>
               <div className="section-title">Selecionados ({pickedArr.length}) — defina séries/reps/carga</div>
-              {pickedArr.map(({ ex, sets, reps, weight }) => (
+              {pickedArr.map(({ ex, sets, reps, weight, rest }) => (
                 <div className="picked" key={ex.id}>
                   <div className="thumb"><img src={ex.images?.[0]} alt={ex.name} loading="lazy" /></div>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -82,6 +83,7 @@ export default function ExercisePicker({ onClose, onConfirm }) {
                       <input className="mini" placeholder="Séries" value={sets} onChange={(e) => upd(ex.id, 'sets', e.target.value)} />
                       <input className="mini" placeholder="Reps" value={reps} onChange={(e) => upd(ex.id, 'reps', e.target.value)} />
                       <input className="mini" placeholder="Carga" value={weight} onChange={(e) => upd(ex.id, 'weight', e.target.value)} />
+                      <input className="mini" placeholder="Desc.(s)" value={rest} onChange={(e) => upd(ex.id, 'rest', e.target.value)} />
                     </div>
                   </div>
                   <button className="btn-ghost danger" onClick={() => toggle(ex)}>✕</button>
