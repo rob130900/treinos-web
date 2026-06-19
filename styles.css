@@ -193,7 +193,7 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
 .btn-video:hover { background: var(--orange); color: #111; }
 .btn-video .vicon { width: 16px; height: 16px; }
 
-.video-modal { width: 100%; max-width: 760px; background: var(--bg2); border: 1px solid var(--line);
+.video-modal { width: 100%; max-width: 440px; background: var(--bg2); border: 1px solid var(--line);
   border-radius: 16px; overflow: hidden; }
 .video-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); }
 .video-frame { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; }
