@@ -13,3 +13,6 @@ export const IcoClose = (p) => (<svg {...base} {...p}><path d="M18 6L6 18" /><pa
 export const IcoFlame = (p) => (<svg {...base} {...p} fill="currentColor" stroke="none"><path d="M12 2c1 3-1 4-2 6-1 2 0 4 2 4 1 0 2-1 2-2 1 1 2 3 2 5a6 6 0 1 1-12 0c0-3 2-5 3-7 0 2 1 3 2 3 1-3-1-5 1-9z" /></svg>);
 export const IcoLogout = (p) => (<svg {...base} {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" /></svg>);
 export const IcoClock = (p) => (<svg {...base} {...p}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>);
+export const IcoChat = (p) => (<svg {...base} {...p}><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z" /></svg>);
+export const IcoBell = (p) => (<svg {...base} {...p}><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>);
+export const IcoSend = (p) => (<svg {...base} {...p}><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>);

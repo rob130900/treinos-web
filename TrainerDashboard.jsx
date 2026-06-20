@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api.js';
 import { useAuth } from './AuthContext.jsx';
 import ExercisePicker from './ExercisePicker.jsx';
+import TrainerMessages from './TrainerMessages.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -9,6 +10,17 @@ export default function TrainerDashboard() {
   const [workouts, setWorkouts] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [error, setError] = useState('');
+  const [showMsgs, setShowMsgs] = useState(false);
+  const [msgStudent, setMsgStudent] = useState(null);
+  const [unread, setUnread] = useState(0);
+  const [alerts, setAlerts] = useState([]);
+
+  async function loadComm() {
+    try { setUnread((await api.unreadCount()).unread || 0); } catch { /* */ }
+    try { setAlerts((await api.alerts()).alerts || []); } catch { /* */ }
+  }
+  useEffect(() => { loadComm(); const t = setInterval(loadComm, 15000); return () => clearInterval(t); }, []);
+  function openMsgs(studentId) { setMsgStudent(studentId || null); setShowMsgs(true); }
 
   async function loadStudents() {
     try { setStudents((await api.listStudents()).students); }
@@ -44,6 +56,9 @@ export default function TrainerDashboard() {
           <span className="dim" style={{ fontSize: 13 }}>Painel do Personal</span>
         </div>
         <div className="row">
+          <button className="btn-ghost msg-btn" onClick={() => openMsgs(null)}>
+            💬 Mensagens{unread > 0 && <span className="hdr-badge">{unread > 9 ? '9+' : unread}</span>}
+          </button>
           <button className="btn-ghost" onClick={downloadBackup} disabled={exporting} title="Baixar todos os dados em SQL (backup / migração)">
             {exporting ? 'Gerando...' : '⬇ Backup'}
           </button>
@@ -53,6 +68,21 @@ export default function TrainerDashboard() {
       </header>
 
       {error && <div className="alert">{error}</div>}
+
+      {alerts.length > 0 && (
+        <div className="alerts-card">
+          <div className="alerts-head">🔔 Alertas inteligentes ({alerts.length})</div>
+          {alerts.map((a, i) => (
+            <button key={i} className={`alert-row ${a.type}`} onClick={() => openMsgs(a.student_id)}>
+              <span className="alert-dot" />
+              <span>{a.text}</span>
+              <span className="alert-go">falar →</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {showMsgs && <TrainerMessages initialStudentId={msgStudent} onClose={() => { setShowMsgs(false); loadComm(); }} />}
 
       <div className="grid">
         <section className="card">

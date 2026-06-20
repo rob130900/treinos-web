@@ -442,8 +442,103 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
 .hcard-meta { font-size: 12.5px; color: var(--muted); margin-top: 1px; }
 .hcard-dur { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--muted); background: var(--card2); border: 1px solid var(--line); padding: 5px 9px; border-radius: 8px; flex-shrink: 0; }
 
+/* Exercício: Execução / Dicas / Erros comuns (i18n) */
+.ex-info { display: flex; flex-direction: column; gap: 14px; margin-top: 6px; }
+.ex-block-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--orange); margin-bottom: 7px; }
+.ex-block-title.err { color: var(--danger); }
+.ex-info .instr { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.ex-info .instr li { font-size: 14.5px; line-height: 1.45; color: var(--text); }
+.bullets { margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; list-style: none; }
+.bullets li { font-size: 14px; line-height: 1.45; color: var(--muted); position: relative; padding-left: 18px; }
+.bullets li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 900; }
+.bullets.err li::before { content: '✕'; color: var(--danger); }
+
 /* Em breve / skeleton */
 .soon-wrap { text-align: center; padding: 60px 24px; color: var(--orange); }
 .soon-wrap h2 { color: #fff; }
 .skeleton-hero { height: 180px; border-radius: 18px; background: linear-gradient(100deg, var(--card) 30%, var(--card2) 50%, var(--card) 70%); background-size: 200% 100%; animation: shimmer 1.3s infinite; }
 @keyframes shimmer { to { background-position: -200% 0; } }
+
+/* ====================================================== */
+/*  COMUNICAÇÃO (Fase A): chat, dúvida, feedback, badges   */
+/* ====================================================== */
+.nav-ico-wrap { position: relative; display: inline-flex; }
+.nav-badge { position: absolute; top: -6px; right: -9px; min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 9px; background: var(--orange); color: #111; font-size: 10px; font-weight: 900;
+  display: flex; align-items: center; justify-content: center; }
+
+/* Botão tirar dúvida (no player) */
+.btn-doubt { width: 100%; margin-top: 14px; padding: 12px; border-radius: 12px; cursor: pointer;
+  background: var(--orange-soft); color: var(--orange); border: 1px solid var(--orange);
+  font-weight: 800; font-size: 14px; }
+.btn-doubt:hover { background: var(--orange); color: #111; }
+
+/* Sheet (modais de dúvida e feedback) */
+.sheet { width: 100%; max-width: 420px; background: var(--card); border: 1px solid var(--line2);
+  border-radius: 18px; padding: 20px; }
+.sheet-title { font-size: 19px; font-weight: 900; text-align: center; margin-bottom: 14px; line-height: 1.25; }
+.sheet textarea { resize: none; }
+.fb-label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 800; margin: 16px 0 8px; }
+.fb-scale { display: flex; gap: 8px; }
+.fb-dot { flex: 1; height: 46px; border-radius: 12px; cursor: pointer; border: 1px solid var(--line2);
+  background: var(--card2); color: var(--muted); font-size: 17px; font-weight: 900; }
+.fb-dot.on { background: var(--orange); color: #111; border-color: var(--orange); }
+.fb-hint { text-align: center; font-size: 13px; color: var(--muted); margin-top: 8px; font-weight: 600; }
+.fb-opt { flex: 1; padding: 12px; border-radius: 12px; cursor: pointer; border: 1px solid var(--line2);
+  background: var(--card2); color: var(--muted); font-weight: 800; font-size: 14px; }
+.fb-opt.on { background: var(--orange); color: #111; border-color: var(--orange); }
+.fb-opt.danger.on { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+/* Chat (aluno e personal) */
+.chat { display: flex; flex-direction: column; height: calc(100vh - 78px - 60px); }
+.chat-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 8px 2px 12px; }
+.bubble { max-width: 82%; padding: 10px 13px; border-radius: 14px; }
+.bubble.mine { align-self: flex-end; background: var(--orange); color: #1a0f06; border-bottom-right-radius: 5px; }
+.bubble.theirs { align-self: flex-start; background: var(--card2); border: 1px solid var(--line); border-bottom-left-radius: 5px; }
+.bubble-body { font-size: 14.5px; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
+.bubble-tag { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; opacity: .85; margin-bottom: 4px; }
+.bubble.theirs .bubble-tag { color: var(--orange); opacity: 1; }
+.bubble-tag.fb { color: var(--green); }
+.bubble-time { font-size: 10px; opacity: .65; margin-top: 4px; text-align: right; }
+.chat-input { display: flex; gap: 8px; align-items: flex-end; padding-top: 8px; border-top: 1px solid var(--line); }
+.chat-input textarea { flex: 1; max-height: 110px; min-height: 44px; padding: 11px 14px; border-radius: 14px; }
+.chat-send { width: 46px; height: 46px; flex-shrink: 0; border: none; border-radius: 50%; cursor: pointer;
+  background: var(--orange); color: #111; display: flex; align-items: center; justify-content: center; }
+.chat-send:disabled { opacity: .45; cursor: default; }
+
+/* Personal: botão mensagens + badge no header */
+.msg-btn { position: relative; }
+.hdr-badge { margin-left: 6px; background: var(--orange); color: #111; font-size: 10px; font-weight: 900;
+  border-radius: 9px; padding: 1px 6px; }
+
+/* Personal: card de alertas */
+.alerts-card { background: linear-gradient(160deg, rgba(255,106,0,.12), var(--card)); border: 1px solid rgba(255,106,0,.3);
+  border-radius: 14px; padding: 14px; margin-bottom: 16px; }
+.alerts-head { font-size: 13px; font-weight: 800; color: var(--orange); margin-bottom: 10px; }
+.alert-row { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; cursor: pointer;
+  background: var(--card2); border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; margin-bottom: 8px; color: var(--text); font-size: 14px; }
+.alert-row:hover { border-color: var(--line2); }
+.alert-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); flex-shrink: 0; }
+.alert-row.dor .alert-dot { background: var(--danger); }
+.alert-row span:nth-child(2) { flex: 1; }
+.alert-go { color: var(--orange); font-size: 12px; font-weight: 800; flex-shrink: 0; }
+
+/* Personal: central de mensagens (modal 2 painéis) */
+.msg-modal { max-width: 880px; height: 86vh; }
+.msg-layout { display: flex; flex: 1; min-height: 0; }
+.msg-list { width: 270px; flex-shrink: 0; border-right: 1px solid var(--line); overflow-y: auto; }
+.msg-conv { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; cursor: pointer;
+  background: none; border: none; border-bottom: 1px solid var(--line); padding: 12px 14px; color: var(--text); }
+.msg-conv:hover { background: var(--card2); }
+.msg-conv.active { background: linear-gradient(180deg, rgba(255,106,0,.1), transparent); }
+.conv-badge { background: var(--orange); color: #111; font-size: 10px; font-weight: 900; border-radius: 9px; padding: 1px 6px; flex-shrink: 0; }
+.msg-thread { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.msg-thread-head { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.msg-compose { padding: 10px 12px; border-top: 1px solid var(--line); }
+.mini-toggle { background: var(--card2); border: 1px solid var(--line2); color: var(--muted); border-radius: 8px;
+  padding: 5px 10px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.mini-toggle.on { background: var(--orange-soft); color: var(--orange); border-color: var(--orange); }
+@media (max-width: 640px) {
+  .msg-modal { height: 90vh; }
+  .msg-list { width: 120px; }
+}

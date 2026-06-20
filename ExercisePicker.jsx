@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { EXERCISES, GROUPS, VIDEOS } from './exerciseLibrary.js';
 import ExerciseDemo from './ExerciseDemo.jsx';
+import { exerciseDisplayName } from './exerciseI18n.js';
 
 export default function ExercisePicker({ onClose, onConfirm }) {
   const [q, setQ] = useState('');
@@ -11,7 +12,7 @@ export default function ExercisePicker({ onClose, onConfirm }) {
     const term = q.trim().toLowerCase();
     return EXERCISES.filter((e) => {
       if (group !== 'todos' && e.group !== group) return false;
-      if (term && !e.name.toLowerCase().includes(term)) return false;
+      if (term && !e.name.toLowerCase().includes(term) && !exerciseDisplayName(e.name).toLowerCase().includes(term)) return false;
       return true;
     });
   }, [q, group]);
@@ -76,7 +77,7 @@ export default function ExercisePicker({ onClose, onConfirm }) {
                 <div className="picked" key={ex.id}>
                   <div className="thumb"><img src={ex.images?.[0]} alt={ex.name} loading="lazy" /></div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ex.name}</div>
+                    <div style={{ fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{exerciseDisplayName(ex.name)}</div>
                     <div className="ex-row" style={{ marginTop: 6 }}>
                       <input className="mini" placeholder="Séries" value={sets} onChange={(e) => upd(ex.id, 'sets', e.target.value)} />
                       <input className="mini" placeholder="Reps" value={reps} onChange={(e) => upd(ex.id, 'reps', e.target.value)} />
@@ -99,7 +100,7 @@ export default function ExercisePicker({ onClose, onConfirm }) {
                   <ExerciseDemo img1={ex.images?.[0]} img2={ex.images?.[1]} />
 
                   <div className="body">
-                    <div className="nm">{ex.name}</div>
+                    <div className="nm">{exerciseDisplayName(ex.name)}</div>
                     <div className="mg">{GROUPS.find((g) => g.key === ex.group)?.label}{sel ? ' · ✓ adicionado' : ''}</div>
                   </div>
                 </div>

@@ -34,13 +34,23 @@ export const api = {
   listWorkouts: (studentId) => request(`/api/workouts${studentId ? `?student_id=${studentId}` : ''}`),
   getWorkout: (id) => request(`/api/workouts/${id}`),
   deleteWorkout: (id) => request(`/api/workouts/${id}`, { method: 'DELETE' }),
-  completeWorkout: (id, duration) =>
-    request(`/api/workouts/${id}/complete`, { method: 'POST', body: { duration_seconds: duration ?? null } }),
+  completeWorkout: (id, duration, fb) =>
+    request(`/api/workouts/${id}/complete`, {
+      method: 'POST',
+      body: { duration_seconds: duration ?? null, ...(fb || {}) },
+    }),
   uncompleteWorkout: (id) => request(`/api/workouts/${id}/complete`, { method: 'DELETE' }),
   completeExercise: (wid, exId) => request(`/api/workouts/${wid}/exercises/${exId}/complete`, { method: 'POST' }),
   uncompleteExercise: (wid, exId) => request(`/api/workouts/${wid}/exercises/${exId}/complete`, { method: 'DELETE' }),
   myProgress: () => request('/api/workouts/me/progress'),
   dashboard: () => request('/api/workouts/me/dashboard'),
+
+  // Comunicação
+  sendMessage: (payload) => request('/api/messages', { method: 'POST', body: payload }),
+  thread: (studentId) => request(`/api/messages/thread${studentId ? `?student_id=${studentId}` : ''}`),
+  conversations: () => request('/api/messages/conversations'),
+  unreadCount: () => request('/api/messages/unread'),
+  alerts: () => request('/api/students/alerts'),
   exportSql: async () => {
     const res = await fetch(`${BASE}/api/export`, {
       headers: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},

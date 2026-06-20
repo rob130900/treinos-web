@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { api } from './api.js';
 import ExerciseDemo from './ExerciseDemo.jsx';
+import ExerciseInfo from './ExerciseInfo.jsx';
+import { exerciseDisplayName } from './exerciseI18n.js';
 import { IcoClose, IcoCheck, IcoNext, IcoPrev, IcoClock } from './Icons.jsx';
 
 function mmss(s) {
@@ -16,6 +18,14 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
   const [rest, setRest] = useState(null);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
+  const [doubt, setDoubt] = useState(null); // nome do exercício da dúvida
+  const [doubtText, setDoubtText] = useState('');
+  const [doubtSent, setDoubtSent] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [fbDifficulty, setFbDifficulty] = useState(0);
+  const [fbPain, setFbPain] = useState(false);
+  const [fbComment, setFbComment] = useState('');
+  const [saving, setSaving] = useState(false);
 
   // carregar treino
   useEffect(() => {
@@ -50,6 +60,7 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
   const completedCount = ex.filter((e) => e.completed).length;
   const allDone = total > 0 && completedCount === total;
   const cur = ex[idx];
+  const curName = cur ? exerciseDisplayName(cur.name) : '';
 
   function markCurrent() {
     const e = cur;
@@ -67,9 +78,28 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
     else if (!isLast) setIdx(idx + 1);
   }
 
-  async function finish() {
-    try { await api.completeWorkout(workoutId, elapsed); } catch { /* ignore */ }
+  async function submitFeedback() {
+    setSaving(true);
+    try {
+      await api.completeWorkout(workoutId, elapsed, {
+        difficulty: fbDifficulty || null,
+        pain: fbPain,
+        feedback: fbComment.trim() || null,
+      });
+    } catch { /* ignore */ }
+    setSaving(false);
+    setShowFeedback(false);
     setDone(true);
+  }
+
+  async function sendDoubt() {
+    if (!doubtText.trim()) return;
+    setSaving(true);
+    try {
+      await api.sendMessage({ body: doubtText.trim(), kind: 'duvida', exercise_name: doubt, workout_id: workoutId });
+      setDoubtSent(true);
+    } catch { /* ignore */ }
+    setSaving(false);
   }
 
   // Tela de conclusao
@@ -122,7 +152,7 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
             {cur.muscle_group && <span className="banner-tag">{cur.muscle_group}</span>}
           </div>
 
-          <h2 className="ex-name">{cur.name}</h2>
+          <h2 className="ex-name">{curName}</h2>
 
           <div className="ex-stats">
             <div className="es"><b>{cur.sets || '-'}</b><small>séries</small></div>
@@ -131,11 +161,11 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
             <div className="es"><b>{cur.rest_seconds || 60}s</b><small>descanso</small></div>
           </div>
 
-          {cur.instructions && (
-            <ol className="instr">
-              {cur.instructions.split('\n').filter(Boolean).slice(0, 4).map((s, i) => <li key={i}>{s}</li>)}
-            </ol>
-          )}
+          <ExerciseInfo name={cur.name} instructions={cur.instructions} />
+
+          <button className="btn-doubt" onClick={() => { setDoubt(curName); setDoubtText(''); setDoubtSent(false); }}>
+            💬 Tirar dúvida sobre este exercício
+          </button>
         </div>
       )}
 
@@ -150,7 +180,54 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
 
       {allDone && (
         <div className="finish-bar">
-          <button className="btn" onClick={finish}>Finalizar treino</button>
+          <button className="btn" onClick={() => setShowFeedback(true)}>Finalizar treino</button>
+        </div>
+      )}
+
+      {/* Modal: tirar dúvida sobre o exercício */}
+      {doubt && (
+        <div className="rest-overlay" onClick={() => setDoubt(null)}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet-title">Dúvida sobre<br /><span style={{ color: 'var(--orange)' }}>{doubt}</span></div>
+            {doubtSent ? (
+              <>
+                <p className="muted" style={{ textAlign: 'center', margin: '8px 0 16px' }}>✅ Enviado pro seu personal! Ele responde no chat de <b>Suporte</b>.</p>
+                <button className="btn" onClick={() => setDoubt(null)}>Fechar</button>
+              </>
+            ) : (
+              <>
+                <textarea placeholder="Escreva sua dúvida sobre este exercício..." value={doubtText} onChange={(e) => setDoubtText(e.target.value)} rows={4} />
+                <div className="row" style={{ marginTop: 10, justifyContent: 'flex-end' }}>
+                  <button className="btn-ghost" onClick={() => setDoubt(null)}>Cancelar</button>
+                  <button className="btn-sm" disabled={saving || !doubtText.trim()} onClick={sendDoubt}>{saving ? 'Enviando...' : 'Enviar'}</button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal: feedback pós-treino */}
+      {showFeedback && (
+        <div className="rest-overlay">
+          <div className="sheet">
+            <div className="sheet-title">Como foi o treino? 💪</div>
+            <div className="fb-label">Nível de dificuldade</div>
+            <div className="fb-scale">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button key={n} className={`fb-dot ${fbDifficulty >= n ? 'on' : ''}`} onClick={() => setFbDifficulty(n)}>{n}</button>
+              ))}
+            </div>
+            <div className="fb-hint">{fbDifficulty ? ['Muito fácil', 'Fácil', 'Moderado', 'Difícil', 'Muito difícil'][fbDifficulty - 1] : 'Toque para avaliar'}</div>
+            <div className="fb-label">Sentiu dor ou desconforto?</div>
+            <div className="row" style={{ gap: 8 }}>
+              <button className={`fb-opt ${!fbPain ? 'on' : ''}`} onClick={() => setFbPain(false)}>Não</button>
+              <button className={`fb-opt danger ${fbPain ? 'on' : ''}`} onClick={() => setFbPain(true)}>Sim, senti dor</button>
+            </div>
+            <div className="fb-label">Comentário (opcional)</div>
+            <textarea placeholder="Como você se sentiu? Algo a relatar?" value={fbComment} onChange={(e) => setFbComment(e.target.value)} rows={3} />
+            <button className="btn" style={{ marginTop: 14 }} disabled={saving} onClick={submitFeedback}>{saving ? 'Salvando...' : 'Concluir treino'}</button>
+          </div>
         </div>
       )}
 
@@ -160,7 +237,7 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
           <div className="rest-card">
             <div className="rest-kicker">Descanso</div>
             <div className="rest-count">{mmss(rest)}</div>
-            <div className="rest-next muted">A seguir: {ex[Math.min(idx + 1, total - 1)]?.name}</div>
+            <div className="rest-next muted">A seguir: {exerciseDisplayName(ex[Math.min(idx + 1, total - 1)]?.name)}</div>
             <div className="rest-btns">
               <button className="btn-ghost" onClick={() => setRest((r) => r + 15)}>+15s</button>
               <button className="btn-sm" onClick={() => { setRest(null); setIdx((i) => Math.min(i + 1, total - 1)); }}>Pular descanso</button>
