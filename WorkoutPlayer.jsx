@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from './api.js';
-import VideoModal from './VideoModal.jsx';
-import { IcoClose, IcoCheck, IcoNext, IcoPrev, IcoPlay, IcoClock } from './Icons.jsx';
+import ExerciseDemo from './ExerciseDemo.jsx';
+import { IcoClose, IcoCheck, IcoNext, IcoPrev, IcoClock } from './Icons.jsx';
 
 function mmss(s) {
   const m = Math.floor(s / 60), x = s % 60;
@@ -14,7 +14,6 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
   const [idx, setIdx] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [rest, setRest] = useState(null);
-  const [preview, setPreview] = useState(null);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
 
@@ -118,11 +117,8 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
       {/* Conteudo */}
       {cur && (
         <div className="player-body">
-          <div className="ex-banner" onClick={() => cur.video_id && setPreview({ id: cur.video_id, title: cur.name })}>
-            {cur.image_url
-              ? <img src={cur.image_url} alt={cur.name} />
-              : <div className="ex-banner-empty">sem imagem</div>}
-            {cur.video_id && <span className="banner-play"><IcoPlay width={26} height={26} /></span>}
+          <div className="ex-banner">
+            <ExerciseDemo img1={cur.image_url} img2={cur.image_url2} label="execução" speed={650} />
             {cur.muscle_group && <span className="banner-tag">{cur.muscle_group}</span>}
           </div>
 
@@ -134,12 +130,6 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
             <div className="es"><b>{cur.weight || '-'}</b><small>carga</small></div>
             <div className="es"><b>{cur.rest_seconds || 60}s</b><small>descanso</small></div>
           </div>
-
-          {cur.video_id && (
-            <button className="btn-video" style={{ width: '100%', justifyContent: 'center' }} onClick={() => setPreview({ id: cur.video_id, title: cur.name })}>
-              <span className="vicon">▶</span> Ver execução em vídeo
-            </button>
-          )}
 
           {cur.instructions && (
             <ol className="instr">
@@ -179,7 +169,6 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
         </div>
       )}
 
-      {preview && <VideoModal videoId={preview.id} title={preview.title} onClose={() => setPreview(null)} />}
     </div>
   );
 }

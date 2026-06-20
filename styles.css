@@ -142,6 +142,13 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
 .demo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .demo .tagpos { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,.6); color: #fff;
   font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+.demo-empty { display: flex; align-items: center; justify-content: center; background: var(--card2); color: var(--dim); }
+.loop-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,.62); color: #fff;
+  font-size: 9px; font-weight: 800; letter-spacing: .1em; padding: 3px 7px; border-radius: 6px; }
+/* No player, a animação preenche o banner mostrando o movimento inteiro */
+.ex-banner .demo { width: 100%; height: 100%; aspect-ratio: auto; border-radius: 0; }
+.ex-banner .demo img { object-fit: contain; }
+.ex-banner .demo.demo-empty { background: var(--card2); }
 .ex-card { background: var(--card2); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color .15s, transform .1s; }
 .ex-card:hover { border-color: var(--orange); transform: translateY(-2px); }
 .ex-card .body { padding: 10px 12px; }

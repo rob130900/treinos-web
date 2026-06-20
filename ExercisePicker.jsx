@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react';
 import { EXERCISES, GROUPS, VIDEOS } from './exerciseLibrary.js';
-import VideoModal from './VideoModal.jsx';
+import ExerciseDemo from './ExerciseDemo.jsx';
 
 export default function ExercisePicker({ onClose, onConfirm }) {
   const [q, setQ] = useState('');
   const [group, setGroup] = useState('todos');
   const [picked, setPicked] = useState({}); // id -> {ex, sets, reps, weight}
-  const [preview, setPreview] = useState(null); // {id, title}
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -49,7 +48,6 @@ export default function ExercisePicker({ onClose, onConfirm }) {
   const pickedArr = Object.values(picked);
 
   return (
-    <>
     <div className="modal-bg" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-head">
@@ -98,16 +96,8 @@ export default function ExercisePicker({ onClose, onConfirm }) {
               return (
                 <div key={ex.id} className="ex-card" onClick={() => toggle(ex)}
                   style={sel ? { borderColor: 'var(--orange)', boxShadow: '0 0 0 1px var(--orange) inset' } : null}>
-                  <div className="demo">
-                    <img src={ex.images?.[0]} alt={ex.name} loading="lazy" />
-                    {VIDEOS[ex.id] && (
-                      <button
-                        className="play-ov"
-                        title="Ver vídeo de execução"
-                        onClick={(e) => { e.stopPropagation(); setPreview({ id: VIDEOS[ex.id], title: ex.name }); }}
-                      >▶</button>
-                    )}
-                  </div>
+                  <ExerciseDemo img1={ex.images?.[0]} img2={ex.images?.[1]} />
+
                   <div className="body">
                     <div className="nm">{ex.name}</div>
                     <div className="mg">{GROUPS.find((g) => g.key === ex.group)?.label}{sel ? ' · ✓ adicionado' : ''}</div>
@@ -128,7 +118,5 @@ export default function ExercisePicker({ onClose, onConfirm }) {
         </div>
       </div>
     </div>
-    {preview && <VideoModal videoId={preview.id} title={preview.title} onClose={() => setPreview(null)} />}
-    </>
   );
 }
