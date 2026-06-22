@@ -3,6 +3,7 @@ import { api } from './api.js';
 import ExerciseDemo from './ExerciseDemo.jsx';
 import ExerciseInfo from './ExerciseInfo.jsx';
 import { exerciseDisplayName } from './exerciseI18n.js';
+import { imagesForName } from './exerciseMedia.js';
 import { IcoClose, IcoCheck, IcoNext, IcoPrev, IcoClock } from './Icons.jsx';
 
 function mmss(s) {
@@ -61,6 +62,9 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
   const allDone = total > 0 && completedCount === total;
   const cur = ex[idx];
   const curName = cur ? exerciseDisplayName(cur.name) : '';
+  const curFallback = cur ? imagesForName(cur.name) : [];
+  const curImg1 = cur ? (cur.image_url || curFallback[0]) : null;
+  const curImg2 = cur ? (cur.image_url2 || curFallback[1]) : null;
 
   function markCurrent() {
     const e = cur;
@@ -148,7 +152,7 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
       {cur && (
         <div className="player-body">
           <div className="ex-banner">
-            <ExerciseDemo img1={cur.image_url} img2={cur.image_url2} label="execução" speed={650} />
+            <ExerciseDemo img1={curImg1} img2={curImg2} label="execução" speed={650} />
             {cur.muscle_group && <span className="banner-tag">{cur.muscle_group}</span>}
           </div>
 

@@ -6,6 +6,7 @@ import TrainerMessages from './TrainerMessages.jsx';
 import StudentEvolution from './StudentEvolution.jsx';
 import TrainerFinance from './TrainerFinance.jsx';
 import StudentFicha from './StudentFicha.jsx';
+import TrainerPlans from './TrainerPlans.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -28,15 +29,21 @@ export default function TrainerDashboard() {
   useEffect(() => { loadComm(); const t = setInterval(loadComm, 15000); return () => clearInterval(t); }, []);
   function openMsgs(studentId) { setMsgStudent(studentId || null); setShowMsgs(true); }
 
+  const [planInfo, setPlanInfo] = useState(null);
+  const [showPlans, setShowPlans] = useState(false);
+
   async function loadStudents() {
     try { setStudents((await api.listStudents()).students); }
     catch (err) { setError(err.message); }
+  }
+  async function loadPlan() {
+    try { setPlanInfo(await api.getPlan()); } catch { /* */ }
   }
   async function loadWorkouts(studentId) {
     try { setWorkouts((await api.listWorkouts(studentId)).workouts); }
     catch (err) { setError(err.message); }
   }
-  useEffect(() => { loadStudents(); loadWorkouts(); }, []);
+  useEffect(() => { loadStudents(); loadWorkouts(); loadPlan(); }, []);
 
   function selectStudent(s) { setSelectedStudent(s); loadWorkouts(s?.id); }
 
@@ -66,6 +73,7 @@ export default function TrainerDashboard() {
             💬 Mensagens{unread > 0 && <span className="hdr-badge">{unread > 9 ? '9+' : unread}</span>}
           </button>
           <button className="btn-ghost" onClick={() => setShowFinance(true)}>💰 Financeiro</button>
+          <button className="btn-ghost" onClick={() => setShowPlans(true)}>⭐ Planos</button>
           <button className="btn-ghost" onClick={downloadBackup} disabled={exporting} title="Baixar todos os dados em SQL (backup / migração)">
             {exporting ? 'Gerando...' : '⬇ Backup'}
           </button>
@@ -93,6 +101,14 @@ export default function TrainerDashboard() {
 
       {showFinance && <TrainerFinance students={students} onClose={() => setShowFinance(false)} onChange={loadStudents} />}
 
+      {showPlans && planInfo && (
+        <TrainerPlans
+          planInfo={planInfo}
+          onClose={() => setShowPlans(false)}
+          onUpgraded={(r) => { setPlanInfo((p) => ({ ...p, ...r })); loadStudents(); }}
+        />
+      )}
+
       {fichaStudent && (
         <StudentFicha
           student={fichaStudent}
@@ -119,7 +135,42 @@ export default function TrainerDashboard() {
         <section className="card">
           <h2>Meus Alunos</h2>
           <div className="sub">Cadastre e acompanhe a evolução</div>
-          <AddStudent onAdded={loadStudents} setError={setError} />
+
+          {planInfo && (() => {
+            const limit = planInfo.limit;
+            const used = planInfo.used;
+            const atLimit = limit != null && used >= limit;
+            const pct = limit != null ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+            return (
+              <div className={`plan-meter ${atLimit ? 'full' : ''}`}>
+                <div className="spread">
+                  {planInfo.isTrial ? (
+                    <span className="plan-meter-txt">
+                      Você cadastrou <b>{used}</b> de <b>3</b> alunos no <span className="plan-meter-name">plano gratuito</span>
+                      {planInfo.daysLeft != null && <> · <b>{planInfo.daysLeft}</b> {planInfo.daysLeft === 1 ? 'dia restante' : 'dias restantes'}</>}
+                    </span>
+                  ) : (
+                    <span className="plan-meter-txt">
+                      Você está usando <b>{used}</b> de <b>{limit == null ? '∞' : limit}</b> alunos · <span className="plan-meter-name">{planInfo.plan?.name}</span>
+                    </span>
+                  )}
+                  <button className="btn-mini" onClick={() => setShowPlans(true)}>{limit == null ? 'Ver planos' : 'Upgrade'}</button>
+                </div>
+                {limit != null && <div className="meter-bar"><div className="meter-fill" style={{ width: `${pct}%` }} /></div>}
+                {atLimit ? (
+                  <div className="plan-meter-warn">
+                    {planInfo.isTrial
+                      ? 'Você atingiu o limite de alunos do período gratuito. Faça upgrade para continuar cadastrando.'
+                      : 'Você atingiu o limite do seu plano. Faça upgrade para continuar adicionando alunos.'}
+                  </div>
+                ) : planInfo.isTrial && (
+                  <div className="plan-meter-hint">Teste o sistema com até 3 alunos. Desbloqueie mais ao assinar um plano. 🚀</div>
+                )}
+              </div>
+            );
+          })()}
+
+          <AddStudent onAdded={() => { loadStudents(); loadPlan(); }} setError={setError} onOpenPlans={() => setShowPlans(true)} />
           <div className="list">
             <button className={`student-item ${!selectedStudent ? 'active' : ''}`} onClick={() => selectStudent(null)}>
               <div className="nm">Todos os treinos</div>
@@ -190,19 +241,35 @@ export default function TrainerDashboard() {
   );
 }
 
-function AddStudent({ onAdded, setError }) {
+function AddStudent({ onAdded, setError, onOpenPlans }) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [limitMsg, setLimitMsg] = useState('');
 
   async function submit(e) {
     e.preventDefault();
-    setLoading(true); setError('');
+    setLoading(true); setError(''); setLimitMsg('');
     try {
       await api.createStudent(form);
       setForm({ name: '', email: '', password: '' });
       setOpen(false); onAdded();
-    } catch (err) { setError(err.message); } finally { setLoading(false); }
+    } catch (err) {
+      if (/limite/i.test(err.message)) setLimitMsg(err.message);
+      else setError(err.message);
+    } finally { setLoading(false); }
+  }
+
+  if (limitMsg) {
+    return (
+      <div className="limit-box">
+        <div>{limitMsg}</div>
+        <div className="row" style={{ marginTop: 10 }}>
+          <button className="btn-sm" onClick={() => { setLimitMsg(''); onOpenPlans && onOpenPlans(); }}>Ver planos</button>
+          <button className="btn-ghost" onClick={() => setLimitMsg('')}>Fechar</button>
+        </div>
+      </div>
+    );
   }
 
   if (!open) return <button className="btn-sm" style={{ marginTop: 12 }} onClick={() => setOpen(true)}>+ Cadastrar aluno</button>;

@@ -31,6 +31,10 @@ export const api = {
   studentProgress: (id) => request(`/api/students/${id}/progress`),
   updateStudent: (id, payload) => request(`/api/students/${id}`, { method: 'PATCH', body: payload }),
 
+  // Planos do personal (limite de alunos)
+  getPlan: () => request('/api/plan'),
+  upgradePlan: (plan) => request('/api/plan/upgrade', { method: 'POST', body: { plan } }),
+
   // CRM financeiro
   paymentsSummary: () => request('/api/payments/summary'),
   listPayments: (sid) => request(`/api/payments${sid ? `?student_id=${sid}` : ''}`),
