@@ -34,6 +34,8 @@ export const api = {
   // Planos do personal (limite de alunos)
   getPlan: () => request('/api/plan'),
   upgradePlan: (plan) => request('/api/plan/upgrade', { method: 'POST', body: { plan } }),
+  checkoutPlan: (payload) => request('/api/plan/checkout', { method: 'POST', body: payload }),
+  cancelPlan: () => request('/api/plan/cancel', { method: 'POST' }),
 
   // CRM financeiro
   paymentsSummary: () => request('/api/payments/summary'),

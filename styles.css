@@ -531,6 +531,11 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
 .plan-meter-warn { font-size: 12.5px; color: var(--orange); margin-top: 9px; font-weight: 600; }
 .plan-meter-hint { font-size: 12px; color: var(--muted); margin-top: 9px; }
 .trial-banner { background: rgba(255,106,0,.12); border: 1px solid rgba(255,106,0,.35); border-radius: 10px; padding: 11px 13px; font-size: 13px; color: var(--text); margin-bottom: 14px; }
+.trial-banner a { color: var(--orange); font-weight: 700; }
+.pay-summary { background: var(--card2); border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; margin-bottom: 8px; }
+.pix-box { background: var(--card2); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-top: 12px; text-align: center; }
+.pix-qr { width: 180px; height: 180px; border-radius: 10px; background: #fff; padding: 6px; }
+.pix-code { font-size: 11px; word-break: break-all; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 9px; margin-bottom: 9px; color: var(--muted); font-family: monospace; }
 .btn-mini { background: var(--orange-soft); color: var(--orange); border: 1px solid var(--orange); border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 800; cursor: pointer; flex-shrink: 0; }
 .btn-mini:hover { background: var(--orange); color: #111; }
 .limit-box { background: linear-gradient(160deg, rgba(255,106,0,.14), var(--card2)); border: 1px solid rgba(255,106,0,.4); border-radius: 12px; padding: 14px; margin-top: 12px; font-size: 13.5px; color: var(--text); }

@@ -105,7 +105,7 @@ export default function TrainerDashboard() {
         <TrainerPlans
           planInfo={planInfo}
           onClose={() => setShowPlans(false)}
-          onUpgraded={(r) => { setPlanInfo((p) => ({ ...p, ...r })); loadStudents(); }}
+          onUpgraded={() => { loadPlan(); loadStudents(); }}
         />
       )}
 
