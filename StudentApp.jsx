@@ -5,6 +5,7 @@ import StudentHome from './StudentHome.jsx';
 import StudentWorkouts from './StudentWorkouts.jsx';
 import StudentHistory from './StudentHistory.jsx';
 import StudentChat from './StudentChat.jsx';
+import StudentEvolution from './StudentEvolution.jsx';
 import WorkoutPlayer from './WorkoutPlayer.jsx';
 import { IcoHome, IcoDumbbell, IcoHistory, IcoChat, IcoChart, IcoLogout } from './Icons.jsx';
 
@@ -53,15 +54,7 @@ export default function StudentApp() {
         {tab === 'workouts' && <StudentWorkouts key={`w${refreshKey}`} onOpen={openPlayer} />}
         {tab === 'history' && <StudentHistory key={`hi${refreshKey}`} />}
         {tab === 'suporte' && <StudentChat />}
-        {tab === 'evolucao' && (
-          <div className="soon-wrap">
-            <IcoChart width={40} height={40} />
-            <h2 style={{ marginTop: 14 }}>Evolução</h2>
-            <p className="muted" style={{ marginTop: 6 }}>
-              Em breve: registro de peso, medidas, fotos antes/depois e gráficos de evolução.
-            </p>
-          </div>
-        )}
+        {tab === 'evolucao' && <StudentEvolution studentId={null} />}
       </main>
 
       <nav className="bottom-nav">

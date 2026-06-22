@@ -45,6 +45,14 @@ export const api = {
   myProgress: () => request('/api/workouts/me/progress'),
   dashboard: () => request('/api/workouts/me/dashboard'),
 
+  // Evolução
+  listMeasurements: (sid) => request(`/api/progress/measurements${sid ? `?student_id=${sid}` : ''}`),
+  addMeasurement: (payload) => request('/api/progress/measurements', { method: 'POST', body: payload }),
+  deleteMeasurement: (id) => request(`/api/progress/measurements/${id}`, { method: 'DELETE' }),
+  listPhotos: (sid) => request(`/api/progress/photos${sid ? `?student_id=${sid}` : ''}`),
+  addPhoto: (payload) => request('/api/progress/photos', { method: 'POST', body: payload }),
+  deletePhoto: (id) => request(`/api/progress/photos/${id}`, { method: 'DELETE' }),
+
   // Comunicação
   sendMessage: (payload) => request('/api/messages', { method: 'POST', body: payload }),
   thread: (studentId) => request(`/api/messages/thread${studentId ? `?student_id=${studentId}` : ''}`),

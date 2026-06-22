@@ -3,6 +3,7 @@ import { api } from './api.js';
 import { useAuth } from './AuthContext.jsx';
 import ExercisePicker from './ExercisePicker.jsx';
 import TrainerMessages from './TrainerMessages.jsx';
+import StudentEvolution from './StudentEvolution.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -14,6 +15,7 @@ export default function TrainerDashboard() {
   const [msgStudent, setMsgStudent] = useState(null);
   const [unread, setUnread] = useState(0);
   const [alerts, setAlerts] = useState([]);
+  const [showEvo, setShowEvo] = useState(false);
 
   async function loadComm() {
     try { setUnread((await api.unreadCount()).unread || 0); } catch { /* */ }
@@ -84,6 +86,20 @@ export default function TrainerDashboard() {
 
       {showMsgs && <TrainerMessages initialStudentId={msgStudent} onClose={() => { setShowMsgs(false); loadComm(); }} />}
 
+      {showEvo && selectedStudent && (
+        <div className="modal-bg" onClick={() => setShowEvo(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-head">
+              <h2 style={{ fontSize: 18 }}>Evolução · {selectedStudent.name}</h2>
+              <button className="close-x" onClick={() => setShowEvo(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <StudentEvolution studentId={selectedStudent.id} readOnly />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid">
         <section className="card">
           <h2>Meus Alunos</h2>
@@ -109,7 +125,10 @@ export default function TrainerDashboard() {
         </section>
 
         <section className="card">
-          <h2>{selectedStudent ? `Treinos de ${selectedStudent.name}` : 'Todos os treinos'}</h2>
+          <div className="spread">
+            <h2>{selectedStudent ? `Treinos de ${selectedStudent.name}` : 'Todos os treinos'}</h2>
+            {selectedStudent && <button className="btn-ghost" onClick={() => setShowEvo(true)}>📈 Ver evolução</button>}
+          </div>
           <div className="sub">Monte treinos usando a biblioteca de exercícios</div>
           {selectedStudent
             ? <NewWorkout student={selectedStudent} onCreated={() => loadWorkouts(selectedStudent.id)} setError={setError} />

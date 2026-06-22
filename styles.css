@@ -453,6 +453,40 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
 .bullets li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 900; }
 .bullets.err li::before { content: '✕'; color: var(--danger); }
 
+/* ====================================================== */
+/*  EVOLUÇÃO (Fase B)                                      */
+/* ====================================================== */
+.page-title { font-size: 22px; font-weight: 900; letter-spacing: -.02em; margin-bottom: 14px; }
+.evo-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+.evo-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 10px; text-align: center; }
+.evo-num { font-size: 20px; font-weight: 900; letter-spacing: -.02em; }
+.evo-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.evo-section { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+.evo-h3 { font-size: 15px; font-weight: 800; }
+.evo-chart { width: 100%; height: 140px; display: block; }
+.evo-form { background: var(--card2); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+.evo-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.evo-field span { font-size: 11px; color: var(--muted); font-weight: 700; }
+.evo-field input { width: 100%; }
+.evo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.evo-timeline { display: flex; flex-direction: column; gap: 8px; }
+.evo-row { display: flex; align-items: flex-start; gap: 10px; background: var(--card2); border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; }
+.evo-date { font-size: 12px; font-weight: 800; color: var(--orange); min-width: 56px; padding-top: 2px; }
+.evo-vals { flex: 1; display: flex; flex-wrap: wrap; gap: 5px; }
+.evo-pill { font-size: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 7px; padding: 3px 7px; color: var(--muted); }
+.evo-pill b { color: var(--text); }
+.evo-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0 2px; }
+.evo-del:hover { color: var(--danger); }
+.evo-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.evo-compare figure { margin: 0; }
+.evo-compare img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 12px; border: 1px solid var(--line2); }
+.evo-compare figcaption { font-size: 11px; color: var(--muted); text-align: center; margin-top: 5px; font-weight: 700; }
+.evo-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.evo-photo { position: relative; }
+.evo-photo img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); }
+.evo-photo-date { position: absolute; left: 4px; bottom: 4px; font-size: 9px; font-weight: 800; background: rgba(0,0,0,.6); color: #fff; padding: 2px 5px; border-radius: 5px; }
+.evo-photo-del { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border: none; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; cursor: pointer; font-size: 12px; }
+
 /* Em breve / skeleton */
 .soon-wrap { text-align: center; padding: 60px 24px; color: var(--orange); }
 .soon-wrap h2 { color: #fff; }
