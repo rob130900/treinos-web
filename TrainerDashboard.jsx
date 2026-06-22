@@ -4,6 +4,8 @@ import { useAuth } from './AuthContext.jsx';
 import ExercisePicker from './ExercisePicker.jsx';
 import TrainerMessages from './TrainerMessages.jsx';
 import StudentEvolution from './StudentEvolution.jsx';
+import TrainerFinance from './TrainerFinance.jsx';
+import StudentFicha from './StudentFicha.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -16,6 +18,8 @@ export default function TrainerDashboard() {
   const [unread, setUnread] = useState(0);
   const [alerts, setAlerts] = useState([]);
   const [showEvo, setShowEvo] = useState(false);
+  const [showFinance, setShowFinance] = useState(false);
+  const [fichaStudent, setFichaStudent] = useState(null);
 
   async function loadComm() {
     try { setUnread((await api.unreadCount()).unread || 0); } catch { /* */ }
@@ -61,6 +65,7 @@ export default function TrainerDashboard() {
           <button className="btn-ghost msg-btn" onClick={() => openMsgs(null)}>
             💬 Mensagens{unread > 0 && <span className="hdr-badge">{unread > 9 ? '9+' : unread}</span>}
           </button>
+          <button className="btn-ghost" onClick={() => setShowFinance(true)}>💰 Financeiro</button>
           <button className="btn-ghost" onClick={downloadBackup} disabled={exporting} title="Baixar todos os dados em SQL (backup / migração)">
             {exporting ? 'Gerando...' : '⬇ Backup'}
           </button>
@@ -85,6 +90,16 @@ export default function TrainerDashboard() {
       )}
 
       {showMsgs && <TrainerMessages initialStudentId={msgStudent} onClose={() => { setShowMsgs(false); loadComm(); }} />}
+
+      {showFinance && <TrainerFinance students={students} onClose={() => setShowFinance(false)} onChange={loadStudents} />}
+
+      {fichaStudent && (
+        <StudentFicha
+          student={fichaStudent}
+          onClose={() => setFichaStudent(null)}
+          onSaved={() => { loadStudents(); }}
+        />
+      )}
 
       {showEvo && selectedStudent && (
         <div className="modal-bg" onClick={() => setShowEvo(false)}>
@@ -111,12 +126,15 @@ export default function TrainerDashboard() {
             </button>
             {students.map((s) => (
               <button key={s.id} className={`student-item ${selectedStudent?.id === s.id ? 'active' : ''}`} onClick={() => selectStudent(s)}>
-                <div className="row">
+                <div className="row" style={{ width: '100%' }}>
                   <div className="avatar">{s.name.charAt(0).toUpperCase()}</div>
-                  <div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div className="nm">{s.name}</div>
                     <small className="muted">{s.completed_workouts}/{s.total_workouts} treinos concluídos</small>
                   </div>
+                  <span className={`status-tag ${s.overdue ? 'inadimplente' : (s.status || 'ativo')}`}>
+                    {s.overdue ? 'inadimplente' : (s.status || 'ativo')}
+                  </span>
                 </div>
               </button>
             ))}
@@ -127,7 +145,12 @@ export default function TrainerDashboard() {
         <section className="card">
           <div className="spread">
             <h2>{selectedStudent ? `Treinos de ${selectedStudent.name}` : 'Todos os treinos'}</h2>
-            {selectedStudent && <button className="btn-ghost" onClick={() => setShowEvo(true)}>📈 Ver evolução</button>}
+            {selectedStudent && (
+              <div className="row" style={{ gap: 8 }}>
+                <button className="btn-ghost" onClick={() => setFichaStudent(selectedStudent)}>📋 Ficha</button>
+                <button className="btn-ghost" onClick={() => setShowEvo(true)}>📈 Evolução</button>
+              </div>
+            )}
           </div>
           <div className="sub">Monte treinos usando a biblioteca de exercícios</div>
           {selectedStudent
@@ -146,6 +169,10 @@ export default function TrainerDashboard() {
                   </div>
                   <div className="row">
                     <span className={`badge ${w.completed ? 'ok' : 'pend'}`}>{w.completed ? 'Concluído' : 'Pendente'}</span>
+                    <button className="btn-ghost" onClick={async () => {
+                      try { await api.duplicateWorkout(w.id); loadWorkouts(selectedStudent?.id); }
+                      catch (e) { setError(e.message); }
+                    }}>Duplicar</button>
                     <button className="btn-ghost danger" onClick={async () => {
                       if (!confirm('Excluir este treino?')) return;
                       await api.deleteWorkout(w.id);

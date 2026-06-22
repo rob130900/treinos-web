@@ -487,6 +487,36 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
 .evo-photo-date { position: absolute; left: 4px; bottom: 4px; font-size: 9px; font-weight: 800; background: rgba(0,0,0,.6); color: #fff; padding: 2px 5px; border-radius: 5px; }
 .evo-photo-del { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border: none; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; cursor: pointer; font-size: 12px; }
 
+/* ====================================================== */
+/*  CRM (Fase C): status + financeiro                      */
+/* ====================================================== */
+.status-tag { flex-shrink: 0; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em;
+  padding: 3px 8px; border-radius: 7px; border: 1px solid var(--line2); }
+.status-tag.ativo { background: rgba(42,209,124,.14); color: var(--green); border-color: transparent; }
+.status-tag.inativo { background: var(--card2); color: var(--muted); }
+.status-tag.inadimplente { background: rgba(255,77,79,.16); color: var(--danger); border-color: transparent; }
+.alert-row.pagamento .alert-dot { background: var(--danger); }
+
+.fin-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.fin-card { background: var(--card2); border: 1px solid var(--line); border-radius: 12px; padding: 13px 10px; text-align: center; }
+.fin-card.ok { border-color: rgba(42,209,124,.35); }
+.fin-card.danger { border-color: rgba(255,77,79,.35); }
+.fin-num { font-size: 17px; font-weight: 900; letter-spacing: -.02em; }
+.fin-card.ok .fin-num { color: var(--green); }
+.fin-card.danger .fin-num { color: var(--danger); }
+.fin-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.fin-add { background: var(--card2); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 8px; }
+.fin-add select { width: 100%; margin-top: 6px; }
+.fin-check { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--muted); margin: 10px 0; }
+.fin-check input { width: auto; }
+.fin-list { display: flex; flex-direction: column; gap: 8px; }
+.fin-row { display: flex; align-items: center; gap: 8px; background: var(--card2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.fin-amt { font-weight: 800; font-size: 14px; white-space: nowrap; }
+.fin-badge { font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 3px 7px; border-radius: 6px; }
+.fin-badge.pago { background: rgba(42,209,124,.16); color: var(--green); }
+.fin-badge.pendente { background: var(--orange-soft); color: var(--orange); }
+.fin-badge.vencido { background: rgba(255,77,79,.16); color: var(--danger); }
+
 /* Em breve / skeleton */
 .soon-wrap { text-align: center; padding: 60px 24px; color: var(--orange); }
 .soon-wrap h2 { color: #fff; }

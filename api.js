@@ -29,6 +29,15 @@ export const api = {
   createStudent: (payload) => request('/api/students', { method: 'POST', body: payload }),
   listStudents: () => request('/api/students'),
   studentProgress: (id) => request(`/api/students/${id}/progress`),
+  updateStudent: (id, payload) => request(`/api/students/${id}`, { method: 'PATCH', body: payload }),
+
+  // CRM financeiro
+  paymentsSummary: () => request('/api/payments/summary'),
+  listPayments: (sid) => request(`/api/payments${sid ? `?student_id=${sid}` : ''}`),
+  addPayment: (payload) => request('/api/payments', { method: 'POST', body: payload }),
+  markPaid: (id, paidOn) => request(`/api/payments/${id}/pay`, { method: 'PATCH', body: { paid_on: paidOn || null } }),
+  deletePayment: (id) => request(`/api/payments/${id}`, { method: 'DELETE' }),
+  duplicateWorkout: (id, studentId) => request(`/api/workouts/${id}/duplicate`, { method: 'POST', body: studentId ? { student_id: studentId } : {} }),
 
   createWorkout: (payload) => request('/api/workouts', { method: 'POST', body: payload }),
   listWorkouts: (studentId) => request(`/api/workouts${studentId ? `?student_id=${studentId}` : ''}`),
