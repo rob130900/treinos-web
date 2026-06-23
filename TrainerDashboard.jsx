@@ -62,6 +62,34 @@ export default function TrainerDashboard() {
     } catch (err) { setError(err.message); } finally { setExporting(false); }
   }
 
+  if (planInfo?.blocked) {
+    return (
+      <div className="layout">
+        <header className="topbar">
+          <div className="topbar-brand">
+            <span className="kivo" style={{ fontSize: 22 }}>KI<span className="v">V</span>O</span>
+            <span className="dim" style={{ fontSize: 13 }}>Painel do Personal</span>
+          </div>
+          <div className="topbar-user">
+            <span className="muted" style={{ fontSize: 13 }}>{user.name}</span>
+            <button className="btn-ghost" onClick={logout}>Sair</button>
+          </div>
+        </header>
+        <div className="paywall">
+          <div className="paywall-card">
+            <div className="paywall-ico">🔒</div>
+            <h2>Seu período gratuito terminou</h2>
+            <p className="muted">Para continuar gerenciando seus alunos, treinos e mensagens, escolha um plano. Seus dados continuam salvos.</p>
+            <button className="btn" onClick={() => setShowPlans(true)}>Ver planos e assinar</button>
+          </div>
+        </div>
+        {showPlans && planInfo && (
+          <TrainerPlans planInfo={planInfo} onClose={() => setShowPlans(false)} onUpgraded={() => { loadPlan(); loadStudents(); }} />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="layout">
       <header className="topbar">

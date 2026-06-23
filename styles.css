@@ -601,6 +601,13 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
   .welcome-actions { width: 100%; justify-content: flex-end; }
 }
 
+/* Paywall (acesso bloqueado após trial sem pagamento) */
+.paywall { display: flex; justify-content: center; padding: 50px 16px; }
+.paywall-card { max-width: 440px; width: 100%; text-align: center; background: var(--card); border: 1px solid var(--line2); border-radius: 18px; padding: 34px 24px; }
+.paywall-ico { font-size: 40px; margin-bottom: 10px; }
+.paywall-card h2 { font-size: 21px; margin-bottom: 8px; }
+.paywall-card .btn { margin-top: 18px; }
+
 /* Em breve / skeleton */
 .soon-wrap { text-align: center; padding: 60px 24px; color: var(--orange); }
 .soon-wrap h2 { color: #fff; }
