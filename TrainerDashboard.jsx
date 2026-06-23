@@ -64,19 +64,21 @@ export default function TrainerDashboard() {
   return (
     <div className="layout">
       <header className="topbar">
-        <div className="row" style={{ gap: 12 }}>
+        <div className="topbar-brand">
           <span className="kivo" style={{ fontSize: 22 }}>KI<span className="v">V</span>O</span>
           <span className="dim" style={{ fontSize: 13 }}>Painel do Personal</span>
         </div>
-        <div className="row">
-          <button className="btn-ghost msg-btn" onClick={() => openMsgs(null)}>
+        <nav className="topbar-actions">
+          <button className={`btn-ghost msg-btn ${showMsgs ? 'active' : ''}`} onClick={() => openMsgs(null)}>
             💬 Mensagens{unread > 0 && <span className="hdr-badge">{unread > 9 ? '9+' : unread}</span>}
           </button>
-          <button className="btn-ghost" onClick={() => setShowFinance(true)}>💰 Financeiro</button>
-          <button className="btn-ghost" onClick={() => setShowPlans(true)}>⭐ Planos</button>
+          <button className={`btn-ghost ${showFinance ? 'active' : ''}`} onClick={() => setShowFinance(true)}>💰 Financeiro</button>
+          <button className={`btn-ghost ${showPlans ? 'active' : ''}`} onClick={() => setShowPlans(true)}>⭐ Planos</button>
           <button className="btn-ghost" onClick={downloadBackup} disabled={exporting} title="Baixar todos os dados em SQL (backup / migração)">
             {exporting ? 'Gerando...' : '⬇ Backup'}
           </button>
+        </nav>
+        <div className="topbar-user">
           <span className="muted" style={{ fontSize: 13 }}>{user.name}</span>
           <button className="btn-ghost" onClick={logout}>Sair</button>
         </div>

@@ -94,8 +94,26 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
 
 /* ---------- Layout ---------- */
 .layout { max-width: 1120px; margin: 0 auto; padding: 18px 16px 60px; }
-.topbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px;
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px;
   background: rgba(20,21,26,.7); backdrop-filter: blur(8px); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 18px; }
+.topbar-brand { display: flex; align-items: center; gap: 12px; }
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+.topbar-user { display: flex; align-items: center; gap: 10px; }
+.btn-ghost.active { background: var(--orange-soft); color: var(--orange); border-color: var(--orange); }
+
+/* Mobile: menu do topo em grid 2 colunas, botões largos e fáceis de tocar */
+@media (max-width: 720px) {
+  .topbar { flex-direction: column; align-items: stretch; gap: 12px; padding: 14px; }
+  .topbar-brand { justify-content: space-between; }
+  .topbar-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .topbar-actions .btn-ghost {
+    width: 100%; justify-content: center; padding: 14px 10px;
+    font-size: 14px; border-radius: 12px; position: relative;
+  }
+  .topbar-user { justify-content: space-between; border-top: 1px solid var(--line); padding-top: 12px; }
+  .topbar-user .btn-ghost { padding: 10px 18px; border-radius: 12px; }
+}
+
 .grid { display: grid; grid-template-columns: 340px 1fr; gap: 16px; }
 @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
 
