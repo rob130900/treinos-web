@@ -7,6 +7,7 @@ import StudentHistory from './StudentHistory.jsx';
 import StudentChat from './StudentChat.jsx';
 import StudentEvolution from './StudentEvolution.jsx';
 import WelcomeBanner from './WelcomeBanner.jsx';
+import StudentPlans from './StudentPlans.jsx';
 import WorkoutPlayer from './WorkoutPlayer.jsx';
 import { IcoHome, IcoDumbbell, IcoHistory, IcoChat, IcoChart, IcoLogout } from './Icons.jsx';
 
@@ -16,12 +17,15 @@ export default function StudentApp() {
   const [playerId, setPlayerId] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [unread, setUnread] = useState(0);
+  const [plan, setPlan] = useState(null);
+  const [showPlans, setShowPlans] = useState(false);
 
   function openPlayer(id) { if (id) setPlayerId(id); }
   function closePlayer(done) {
     setPlayerId(null);
     if (done) { setRefreshKey((k) => k + 1); setTab('home'); }
   }
+  async function loadPlan() { try { setPlan(await api.getPlan()); } catch { /* */ } }
 
   useEffect(() => {
     let alive = true;
@@ -32,6 +36,20 @@ export default function StudentApp() {
     const t = setInterval(poll, 10000);
     return () => { alive = false; clearInterval(t); };
   }, [tab]);
+
+  useEffect(() => { loadPlan(); }, []);
+
+  // Acesso bloqueado (trial vencido sem pagamento) -> paywall obrigatório
+  if (plan?.blocked) {
+    return (
+      <div className="app-shell">
+        <header className="app-top">
+          <span className="kivo" style={{ fontSize: 22 }}>KI<span className="v">V</span>O</span>
+        </header>
+        <StudentPlans planInfo={plan} paywall onChange={loadPlan} onLogout={logout} />
+      </div>
+    );
+  }
 
   if (playerId) return <WorkoutPlayer workoutId={playerId} onClose={closePlayer} />;
 
@@ -51,6 +69,15 @@ export default function StudentApp() {
       </header>
 
       <main className="app-main">
+        {user?.trainer_name && (
+          <div className="coach-line">Acompanhado por <b>{user.trainer_name}</b></div>
+        )}
+        {plan?.isTrial && (
+          <div className="trial-banner" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ flex: 1 }}>🎁 Você tem <b>{plan.daysLeft}</b> {plan.daysLeft === 1 ? 'dia' : 'dias'} de teste grátis.</span>
+            <button className="btn-mini" onClick={() => setShowPlans(true)}>Assinar</button>
+          </div>
+        )}
         <WelcomeBanner role="student" onAction={(action, nw) => {
           if (action === 'start') { if (nw?.id) openPlayer(nw.id); else setTab('workouts'); }
         }} />
@@ -60,6 +87,10 @@ export default function StudentApp() {
         {tab === 'suporte' && <StudentChat />}
         {tab === 'evolucao' && <StudentEvolution studentId={null} />}
       </main>
+
+      {showPlans && plan && (
+        <StudentPlans planInfo={plan} onClose={() => setShowPlans(false)} onChange={loadPlan} />
+      )}
 
       <nav className="bottom-nav">
         {navItems.map(({ key, label, Ico, badge }) => (

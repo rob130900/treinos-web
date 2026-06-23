@@ -6,7 +6,7 @@ import { useAuth } from './AuthContext.jsx';
 export default function Register() {
   const { saveSession } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'trainer' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'trainer', invite_code: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -49,6 +49,14 @@ export default function Register() {
           <option value="trainer">Personal Trainer</option>
           <option value="student">Aluno</option>
         </select>
+
+        {form.role === 'student' && (
+          <>
+            <label>Código do seu personal</label>
+            <input value={form.invite_code} onChange={(e) => update('invite_code', e.target.value.toUpperCase())} placeholder="Ex: IMPACTO123" required />
+            <p className="muted" style={{ fontSize: 12, marginTop: 4 }}>Peça o código ao seu personal trainer.</p>
+          </>
+        )}
 
         <div style={{ marginTop: 20 }}>
           <button className="btn" disabled={loading}>{loading ? 'Criando...' : 'Criar conta'}</button>

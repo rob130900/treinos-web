@@ -6,8 +6,6 @@ import TrainerMessages from './TrainerMessages.jsx';
 import StudentEvolution from './StudentEvolution.jsx';
 import TrainerFinance from './TrainerFinance.jsx';
 import StudentFicha from './StudentFicha.jsx';
-import TrainerPlans from './TrainerPlans.jsx';
-import WelcomeBanner from './WelcomeBanner.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -22,6 +20,7 @@ export default function TrainerDashboard() {
   const [showEvo, setShowEvo] = useState(false);
   const [showFinance, setShowFinance] = useState(false);
   const [fichaStudent, setFichaStudent] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   async function loadComm() {
     try { setUnread((await api.unreadCount()).unread || 0); } catch { /* */ }
@@ -30,21 +29,15 @@ export default function TrainerDashboard() {
   useEffect(() => { loadComm(); const t = setInterval(loadComm, 15000); return () => clearInterval(t); }, []);
   function openMsgs(studentId) { setMsgStudent(studentId || null); setShowMsgs(true); }
 
-  const [planInfo, setPlanInfo] = useState(null);
-  const [showPlans, setShowPlans] = useState(false);
-
   async function loadStudents() {
     try { setStudents((await api.listStudents()).students); }
     catch (err) { setError(err.message); }
-  }
-  async function loadPlan() {
-    try { setPlanInfo(await api.getPlan()); } catch { /* */ }
   }
   async function loadWorkouts(studentId) {
     try { setWorkouts((await api.listWorkouts(studentId)).workouts); }
     catch (err) { setError(err.message); }
   }
-  useEffect(() => { loadStudents(); loadWorkouts(); loadPlan(); }, []);
+  useEffect(() => { loadStudents(); loadWorkouts(); }, []);
 
   function selectStudent(s) { setSelectedStudent(s); loadWorkouts(s?.id); }
 
@@ -62,34 +55,6 @@ export default function TrainerDashboard() {
     } catch (err) { setError(err.message); } finally { setExporting(false); }
   }
 
-  if (planInfo?.blocked) {
-    return (
-      <div className="layout">
-        <header className="topbar">
-          <div className="topbar-brand">
-            <span className="kivo" style={{ fontSize: 22 }}>KI<span className="v">V</span>O</span>
-            <span className="dim" style={{ fontSize: 13 }}>Painel do Personal</span>
-          </div>
-          <div className="topbar-user">
-            <span className="muted" style={{ fontSize: 13 }}>{user.name}</span>
-            <button className="btn-ghost" onClick={logout}>Sair</button>
-          </div>
-        </header>
-        <div className="paywall">
-          <div className="paywall-card">
-            <div className="paywall-ico">🔒</div>
-            <h2>Seu período gratuito terminou</h2>
-            <p className="muted">Para continuar gerenciando seus alunos, treinos e mensagens, escolha um plano. Seus dados continuam salvos.</p>
-            <button className="btn" onClick={() => setShowPlans(true)}>Ver planos e assinar</button>
-          </div>
-        </div>
-        {showPlans && planInfo && (
-          <TrainerPlans planInfo={planInfo} onClose={() => setShowPlans(false)} onUpgraded={() => { loadPlan(); loadStudents(); }} />
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className="layout">
       <header className="topbar">
@@ -102,7 +67,6 @@ export default function TrainerDashboard() {
             💬 Mensagens{unread > 0 && <span className="hdr-badge">{unread > 9 ? '9+' : unread}</span>}
           </button>
           <button className={`btn-ghost ${showFinance ? 'active' : ''}`} onClick={() => setShowFinance(true)}>💰 Financeiro</button>
-          <button className={`btn-ghost ${showPlans ? 'active' : ''}`} onClick={() => setShowPlans(true)}>⭐ Planos</button>
           <button className="btn-ghost" onClick={downloadBackup} disabled={exporting} title="Baixar todos os dados em SQL (backup / migração)">
             {exporting ? 'Gerando...' : '⬇ Backup'}
           </button>
@@ -115,7 +79,17 @@ export default function TrainerDashboard() {
 
       {error && <div className="alert">{error}</div>}
 
-      <WelcomeBanner role="trainer" onAction={(action) => { if (action === 'plans') setShowPlans(true); }} />
+      {user?.invite_code && (
+        <div className="invite-card">
+          <div>
+            <div className="invite-lbl">Código de convite — compartilhe com seus alunos para vincularem a você:</div>
+            <div className="invite-code">{user.invite_code}</div>
+          </div>
+          <button className="btn-mini" onClick={() => { try { navigator.clipboard.writeText(user.invite_code); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* */ } }}>
+            {copied ? '✓ Copiado' : 'Copiar'}
+          </button>
+        </div>
+      )}
 
       {alerts.length > 0 && (
         <div className="alerts-card">
@@ -133,14 +107,6 @@ export default function TrainerDashboard() {
       {showMsgs && <TrainerMessages initialStudentId={msgStudent} onClose={() => { setShowMsgs(false); loadComm(); }} />}
 
       {showFinance && <TrainerFinance students={students} onClose={() => setShowFinance(false)} onChange={loadStudents} />}
-
-      {showPlans && planInfo && (
-        <TrainerPlans
-          planInfo={planInfo}
-          onClose={() => setShowPlans(false)}
-          onUpgraded={() => { loadPlan(); loadStudents(); }}
-        />
-      )}
 
       {fichaStudent && (
         <StudentFicha
@@ -167,43 +133,9 @@ export default function TrainerDashboard() {
       <div className="grid">
         <section className="card">
           <h2>Meus Alunos</h2>
-          <div className="sub">Cadastre e acompanhe a evolução</div>
+          <div className="sub">Cadastre alunos e acompanhe a evolução — ilimitado e gratuito</div>
 
-          {planInfo && (() => {
-            const limit = planInfo.limit;
-            const used = planInfo.used;
-            const atLimit = limit != null && used >= limit;
-            const pct = limit != null ? Math.min(100, Math.round((used / limit) * 100)) : 0;
-            return (
-              <div className={`plan-meter ${atLimit ? 'full' : ''}`}>
-                <div className="spread">
-                  {planInfo.isTrial ? (
-                    <span className="plan-meter-txt">
-                      Você cadastrou <b>{used}</b> de <b>3</b> alunos no <span className="plan-meter-name">plano gratuito</span>
-                      {planInfo.daysLeft != null && <> · <b>{planInfo.daysLeft}</b> {planInfo.daysLeft === 1 ? 'dia restante' : 'dias restantes'}</>}
-                    </span>
-                  ) : (
-                    <span className="plan-meter-txt">
-                      Você está usando <b>{used}</b> de <b>{limit == null ? '∞' : limit}</b> alunos · <span className="plan-meter-name">{planInfo.plan?.name}</span>
-                    </span>
-                  )}
-                  <button className="btn-mini" onClick={() => setShowPlans(true)}>{limit == null ? 'Ver planos' : 'Upgrade'}</button>
-                </div>
-                {limit != null && <div className="meter-bar"><div className="meter-fill" style={{ width: `${pct}%` }} /></div>}
-                {atLimit ? (
-                  <div className="plan-meter-warn">
-                    {planInfo.isTrial
-                      ? 'Você atingiu o limite de alunos do período gratuito. Faça upgrade para continuar cadastrando.'
-                      : 'Você atingiu o limite do seu plano. Faça upgrade para continuar adicionando alunos.'}
-                  </div>
-                ) : planInfo.isTrial && (
-                  <div className="plan-meter-hint">Teste o sistema com até 3 alunos. Desbloqueie mais ao assinar um plano. 🚀</div>
-                )}
-              </div>
-            );
-          })()}
-
-          <AddStudent onAdded={() => { loadStudents(); loadPlan(); }} setError={setError} onOpenPlans={() => setShowPlans(true)} />
+          <AddStudent onAdded={() => loadStudents()} setError={setError} />
           <div className="list">
             <button className={`student-item ${!selectedStudent ? 'active' : ''}`} onClick={() => selectStudent(null)}>
               <div className="nm">Todos os treinos</div>
@@ -274,35 +206,19 @@ export default function TrainerDashboard() {
   );
 }
 
-function AddStudent({ onAdded, setError, onOpenPlans }) {
+function AddStudent({ onAdded, setError }) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [limitMsg, setLimitMsg] = useState('');
 
   async function submit(e) {
     e.preventDefault();
-    setLoading(true); setError(''); setLimitMsg('');
+    setLoading(true); setError('');
     try {
       await api.createStudent(form);
       setForm({ name: '', email: '', password: '' });
       setOpen(false); onAdded();
-    } catch (err) {
-      if (/limite/i.test(err.message)) setLimitMsg(err.message);
-      else setError(err.message);
-    } finally { setLoading(false); }
-  }
-
-  if (limitMsg) {
-    return (
-      <div className="limit-box">
-        <div>{limitMsg}</div>
-        <div className="row" style={{ marginTop: 10 }}>
-          <button className="btn-sm" onClick={() => { setLimitMsg(''); onOpenPlans && onOpenPlans(); }}>Ver planos</button>
-          <button className="btn-ghost" onClick={() => setLimitMsg('')}>Fechar</button>
-        </div>
-      </div>
-    );
+    } catch (err) { setError(err.message); } finally { setLoading(false); }
   }
 
   if (!open) return <button className="btn-sm" style={{ marginTop: 12 }} onClick={() => setOpen(true)}>+ Cadastrar aluno</button>;

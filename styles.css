@@ -601,6 +601,22 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
   .welcome-actions { width: 100%; justify-content: flex-end; }
 }
 
+/* Código de convite do personal */
+.invite-card { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: linear-gradient(150deg, rgba(255,106,0,.12), var(--card)); border: 1px solid rgba(255,106,0,.3);
+  border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; }
+.invite-lbl { font-size: 12.5px; color: var(--muted); margin-bottom: 4px; }
+.invite-code { font-size: 22px; font-weight: 900; letter-spacing: .08em; color: var(--orange); font-family: monospace; }
+
+/* Aluno: linha "acompanhado por" */
+.coach-line { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+.coach-line b { color: var(--text); }
+
+/* Paywall do aluno (tela cheia) */
+.paywall-overlay { position: fixed; inset: 0; z-index: 80; background: rgba(10,11,14,.92);
+  display: flex; align-items: flex-start; justify-content: center; padding: 24px 14px; overflow-y: auto; }
+.paywall-overlay .modal { max-width: 460px; margin: 0; }
+
 /* Paywall (acesso bloqueado após trial sem pagamento) */
 .paywall { display: flex; justify-content: center; padding: 50px 16px; }
 .paywall-card { max-width: 440px; width: 100%; text-align: center; background: var(--card); border: 1px solid var(--line2); border-radius: 18px; padding: 34px 24px; }
