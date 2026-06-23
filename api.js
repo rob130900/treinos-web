@@ -75,6 +75,9 @@ export const api = {
   thread: (studentId) => request(`/api/messages/thread${studentId ? `?student_id=${studentId}` : ''}`),
   conversations: () => request('/api/messages/conversations'),
   unreadCount: () => request('/api/messages/unread'),
+  listModels: (exercise) => request(`/api/messages/models${exercise ? `?exercise=${encodeURIComponent(exercise)}` : ''}`),
+  saveModel: (payload) => request('/api/messages/models', { method: 'POST', body: payload }),
+  deleteModel: (id) => request(`/api/messages/models/${id}`, { method: 'DELETE' }),
   alerts: () => request('/api/students/alerts'),
   exportSql: async () => {
     const res = await fetch(`${BASE}/api/export`, {

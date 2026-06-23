@@ -57,7 +57,7 @@ export default function StudentApp() {
     { key: 'home', label: 'Início', Ico: IcoHome },
     { key: 'workouts', label: 'Treinos', Ico: IcoDumbbell },
     { key: 'history', label: 'Histórico', Ico: IcoHistory },
-    { key: 'suporte', label: 'Suporte', Ico: IcoChat, badge: unread },
+    { key: 'suporte', label: 'Dúvidas', Ico: IcoChat, badge: unread },
     { key: 'evolucao', label: 'Evolução', Ico: IcoChart },
   ];
 

@@ -690,6 +690,17 @@ label { display: block; font-size: 12px; font-weight: 700; text-transform: upper
 .chat-send { width: 46px; height: 46px; flex-shrink: 0; border: none; border-radius: 50%; cursor: pointer;
   background: var(--orange); color: #111; display: flex; align-items: center; justify-content: center; }
 .chat-send:disabled { opacity: .45; cursor: default; }
+.chat-attach { width: 42px; height: 44px; flex-shrink: 0; border: 1px solid var(--line2); border-radius: 12px; cursor: pointer;
+  background: var(--card2); font-size: 18px; }
+.chat-attach:disabled { opacity: .45; cursor: default; }
+.bubble-video { width: 100%; max-width: 240px; border-radius: 10px; margin-bottom: 6px; background: #000; display: block; }
+.save-model { background: var(--card); border: 1px solid var(--line2); color: var(--orange); border-radius: 8px;
+  padding: 5px 9px; font-size: 11px; font-weight: 800; cursor: pointer; margin-bottom: 6px; }
+.save-model:hover { background: var(--orange-soft); }
+.model-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.model-card { background: var(--card2); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+.model-card .bubble-video { max-width: 100%; }
+.model-lbl { font-size: 13px; font-weight: 700; margin: 6px 0 8px; }
 
 /* Personal: botão mensagens + badge no header */
 .msg-btn { position: relative; }
