@@ -24,9 +24,12 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('token');
     setUser(null);
   }
+  async function refreshUser() {
+    try { const data = await api.me(); setUser(data.user); return data.user; } catch { return null; }
+  }
 
   return (
-    <AuthContext.Provider value={{ user, loading, saveSession, logout }}>
+    <AuthContext.Provider value={{ user, loading, saveSession, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -52,9 +52,9 @@ export default function Register() {
 
         {form.role === 'student' && (
           <>
-            <label>Código do seu personal</label>
-            <input value={form.invite_code} onChange={(e) => update('invite_code', e.target.value.toUpperCase())} placeholder="Ex: IMPACTO123" required />
-            <p className="muted" style={{ fontSize: 12, marginTop: 4 }}>Peça o código ao seu personal trainer.</p>
+            <label>Código do personal (opcional)</label>
+            <input value={form.invite_code} onChange={(e) => update('invite_code', e.target.value.toUpperCase())} placeholder="Ex: IMPACTO123" />
+            <p className="muted" style={{ fontSize: 12, marginTop: 4 }}>Tem o código? Cole aqui. Sem código, você pode vincular depois dentro do app.</p>
           </>
         )}
 

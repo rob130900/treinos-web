@@ -12,7 +12,7 @@ import WorkoutPlayer from './WorkoutPlayer.jsx';
 import { IcoHome, IcoDumbbell, IcoHistory, IcoChat, IcoChart, IcoLogout } from './Icons.jsx';
 
 export default function StudentApp() {
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
   const [tab, setTab] = useState('home');
   const [playerId, setPlayerId] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -69,9 +69,9 @@ export default function StudentApp() {
       </header>
 
       <main className="app-main">
-        {user?.trainer_name && (
-          <div className="coach-line">Acompanhado por <b>{user.trainer_name}</b></div>
-        )}
+        {user?.trainer_name
+          ? <div className="coach-line">Acompanhado por <b>{user.trainer_name}</b></div>
+          : !user?.trainer_id && <LinkTrainerCard onLinked={refreshUser} />}
         {plan?.isTrial && (
           <div className="trial-banner" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ flex: 1 }}>🎁 Você tem <b>{plan.daysLeft}</b> {plan.daysLeft === 1 ? 'dia' : 'dias'} de teste grátis.</span>
@@ -103,6 +103,36 @@ export default function StudentApp() {
           </button>
         ))}
       </nav>
+    </div>
+  );
+}
+
+function LinkTrainerCard({ onLinked }) {
+  const [code, setCode] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [ok, setOk] = useState('');
+
+  async function link() {
+    if (!code.trim()) return;
+    setBusy(true); setError(''); setOk('');
+    try {
+      const r = await api.linkTrainer(code.trim());
+      setOk(`Vinculado a ${r.trainer_name}! ✅`);
+      setTimeout(() => onLinked && onLinked(), 1300);
+    } catch (e) { setError(e.message); } finally { setBusy(false); }
+  }
+
+  if (ok) return <div className="link-ok">{ok}</div>;
+  return (
+    <div className="link-card">
+      <h3>Vincular ao seu personal</h3>
+      <p className="muted" style={{ fontSize: 13 }}>Tem o código do seu personal? Cole abaixo para ser acompanhado por ele.</p>
+      {error && <div className="alert" style={{ marginTop: 10 }}>{error}</div>}
+      <div className="row">
+        <input placeholder="Ex: IMPACTO123" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
+        <button className="btn-sm" disabled={busy || !code.trim()} onClick={link}>{busy ? 'Vinculando...' : 'Vincular personal'}</button>
+      </div>
     </div>
   );
 }

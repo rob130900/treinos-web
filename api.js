@@ -46,6 +46,8 @@ export const api = {
   duplicateWorkout: (id, studentId) => request(`/api/workouts/${id}/duplicate`, { method: 'POST', body: studentId ? { student_id: studentId } : {} }),
 
   createWorkout: (payload) => request('/api/workouts', { method: 'POST', body: payload }),
+  updateWorkout: (id, payload) => request(`/api/workouts/${id}`, { method: 'PUT', body: payload }),
+  linkTrainer: (invite_code) => request('/api/auth/link-trainer', { method: 'POST', body: { invite_code } }),
   listWorkouts: (studentId) => request(`/api/workouts${studentId ? `?student_id=${studentId}` : ''}`),
   getWorkout: (id) => request(`/api/workouts/${id}`),
   deleteWorkout: (id) => request(`/api/workouts/${id}`, { method: 'DELETE' }),

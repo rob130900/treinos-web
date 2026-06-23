@@ -6,6 +6,7 @@ import TrainerMessages from './TrainerMessages.jsx';
 import StudentEvolution from './StudentEvolution.jsx';
 import TrainerFinance from './TrainerFinance.jsx';
 import StudentFicha from './StudentFicha.jsx';
+import WorkoutEditor from './WorkoutEditor.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -21,6 +22,7 @@ export default function TrainerDashboard() {
   const [showFinance, setShowFinance] = useState(false);
   const [fichaStudent, setFichaStudent] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [editWorkoutId, setEditWorkoutId] = useState(null);
 
   async function loadComm() {
     try { setUnread((await api.unreadCount()).unread || 0); } catch { /* */ }
@@ -116,6 +118,14 @@ export default function TrainerDashboard() {
         />
       )}
 
+      {editWorkoutId && (
+        <WorkoutEditor
+          workoutId={editWorkoutId}
+          onClose={() => setEditWorkoutId(null)}
+          onSaved={() => loadWorkouts(selectedStudent?.id)}
+        />
+      )}
+
       {showEvo && selectedStudent && (
         <div className="modal-bg" onClick={() => setShowEvo(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -185,6 +195,7 @@ export default function TrainerDashboard() {
                   </div>
                   <div className="row">
                     <span className={`badge ${w.completed ? 'ok' : 'pend'}`}>{w.completed ? 'Concluído' : 'Pendente'}</span>
+                    <button className="btn-ghost" onClick={() => setEditWorkoutId(w.id)}>Editar</button>
                     <button className="btn-ghost" onClick={async () => {
                       try { await api.duplicateWorkout(w.id); loadWorkouts(selectedStudent?.id); }
                       catch (e) { setError(e.message); }
