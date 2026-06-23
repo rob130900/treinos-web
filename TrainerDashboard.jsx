@@ -7,6 +7,7 @@ import StudentEvolution from './StudentEvolution.jsx';
 import TrainerFinance from './TrainerFinance.jsx';
 import StudentFicha from './StudentFicha.jsx';
 import TrainerPlans from './TrainerPlans.jsx';
+import WelcomeBanner from './WelcomeBanner.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -85,6 +86,8 @@ export default function TrainerDashboard() {
       </header>
 
       {error && <div className="alert">{error}</div>}
+
+      <WelcomeBanner role="trainer" onAction={(action) => { if (action === 'plans') setShowPlans(true); }} />
 
       {alerts.length > 0 && (
         <div className="alerts-card">

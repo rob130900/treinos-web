@@ -6,6 +6,7 @@ import StudentWorkouts from './StudentWorkouts.jsx';
 import StudentHistory from './StudentHistory.jsx';
 import StudentChat from './StudentChat.jsx';
 import StudentEvolution from './StudentEvolution.jsx';
+import WelcomeBanner from './WelcomeBanner.jsx';
 import WorkoutPlayer from './WorkoutPlayer.jsx';
 import { IcoHome, IcoDumbbell, IcoHistory, IcoChat, IcoChart, IcoLogout } from './Icons.jsx';
 
@@ -50,6 +51,9 @@ export default function StudentApp() {
       </header>
 
       <main className="app-main">
+        <WelcomeBanner role="student" onAction={(action, nw) => {
+          if (action === 'start') { if (nw?.id) openPlayer(nw.id); else setTab('workouts'); }
+        }} />
         {tab === 'home' && <StudentHome key={`h${refreshKey}`} user={user} onStart={openPlayer} goTab={setTab} />}
         {tab === 'workouts' && <StudentWorkouts key={`w${refreshKey}`} onOpen={openPlayer} />}
         {tab === 'history' && <StudentHistory key={`hi${refreshKey}`} />}
