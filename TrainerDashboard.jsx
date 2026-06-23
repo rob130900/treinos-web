@@ -7,6 +7,7 @@ import StudentEvolution from './StudentEvolution.jsx';
 import TrainerFinance from './TrainerFinance.jsx';
 import StudentFicha from './StudentFicha.jsx';
 import WorkoutEditor from './WorkoutEditor.jsx';
+import CustomExLibrary from './CustomExLibrary.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -23,6 +24,7 @@ export default function TrainerDashboard() {
   const [fichaStudent, setFichaStudent] = useState(null);
   const [copied, setCopied] = useState(false);
   const [editWorkoutId, setEditWorkoutId] = useState(null);
+  const [showCustomEx, setShowCustomEx] = useState(false);
 
   async function loadComm() {
     try { setUnread((await api.unreadCount()).unread || 0); } catch { /* */ }
@@ -69,6 +71,7 @@ export default function TrainerDashboard() {
             💬 Mensagens{unread > 0 && <span className="hdr-badge">{unread > 9 ? '9+' : unread}</span>}
           </button>
           <button className={`btn-ghost ${showFinance ? 'active' : ''}`} onClick={() => setShowFinance(true)}>💰 Financeiro</button>
+          <button className="btn-ghost" onClick={() => setShowCustomEx(true)}>🎬 Exercícios</button>
           <button className="btn-ghost" onClick={downloadBackup} disabled={exporting} title="Baixar todos os dados em SQL (backup / migração)">
             {exporting ? 'Gerando...' : '⬇ Backup'}
           </button>
@@ -125,6 +128,8 @@ export default function TrainerDashboard() {
           onSaved={() => loadWorkouts(selectedStudent?.id)}
         />
       )}
+
+      {showCustomEx && <CustomExLibrary onClose={() => setShowCustomEx(false)} />}
 
       {showEvo && selectedStudent && (
         <div className="modal-bg" onClick={() => setShowEvo(false)}>

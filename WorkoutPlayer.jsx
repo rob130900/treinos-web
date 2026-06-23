@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from './api.js';
 import ExerciseDemo from './ExerciseDemo.jsx';
+import VideoDemo from './VideoDemo.jsx';
 import ExerciseInfo from './ExerciseInfo.jsx';
 import { exerciseDisplayName } from './exerciseI18n.js';
 import { imagesForName } from './exerciseMedia.js';
@@ -152,7 +153,9 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
       {cur && (
         <div className="player-body">
           <div className="ex-banner">
-            <ExerciseDemo img1={curImg1} img2={curImg2} label="execução" speed={650} />
+            {cur.video_data
+              ? <VideoDemo src={cur.video_data} label={curName} />
+              : <ExerciseDemo img1={curImg1} img2={curImg2} label="execução" zoomable />}
             {cur.muscle_group && <span className="banner-tag">{cur.muscle_group}</span>}
           </div>
 

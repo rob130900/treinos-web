@@ -1,20 +1,34 @@
 import { useEffect, useState } from 'react';
 
-// Mídia principal: anima a execução em loop (ida/volta) usando as 2 fotos reais.
-// Leve (apenas <img>), funciona em qualquer celular, sem áudio/narração.
-// Fallback robusto: se uma imagem falha, usa a outra; se faltam ambas, mostra placeholder limpo.
-export default function ExerciseDemo({ img1, img2, label, speed = 700 }) {
+// Mídia principal: anima a execução em loop usando as 2 fotos reais (leve, sem áudio).
+// Loop mais lento/fluido. Toque abre em TELA CHEIA com play/pause e controle de velocidade.
+// Fallback robusto: se uma imagem falha usa a outra; sem ambas, mostra placeholder.
+const BASE_MS = 850; // tempo por quadro em 1x (mais lento que antes)
+
+export default function ExerciseDemo({ img1, img2, label, zoomable = false }) {
   const [frame, setFrame] = useState(0);
   const [bad, setBad] = useState({});
+  const [open, setOpen] = useState(false);
+  const [playing, setPlaying] = useState(true);
+  const [mult, setMult] = useState(1); // 1x, 0.75x, 0.5x (menor = mais lento)
 
   const frames = [img1, img2].filter((u) => u && !bad[u]);
   const animated = frames.length >= 2;
 
   useEffect(() => {
-    if (!animated) return;
-    const t = setInterval(() => setFrame((f) => (f + 1) % 2), speed);
+    if (!animated || !playing) return;
+    const ms = BASE_MS / mult; // mult menor -> intervalo maior -> mais lento
+    const t = setInterval(() => setFrame((f) => (f + 1) % 2), ms);
     return () => clearInterval(t);
-  }, [animated, speed]);
+  }, [animated, playing, mult]);
+
+  // trava o scroll do fundo enquanto em tela cheia
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [open]);
 
   if (frames.length === 0) {
     return (
@@ -29,16 +43,31 @@ export default function ExerciseDemo({ img1, img2, label, speed = 700 }) {
   }
 
   const src = frames[frame % frames.length];
+
   return (
-    <div className="demo">
-      <img
-        src={src}
-        alt={label || 'execução do exercício'}
-        loading="lazy"
-        onError={() => setBad((b) => ({ ...b, [src]: true }))}
-      />
-      {animated && <span className="loop-badge">LOOP</span>}
-      {label && <span className="tagpos">{label}</span>}
-    </div>
+    <>
+      <div className={`demo ${zoomable ? 'demo-zoom' : ''}`} onClick={zoomable ? () => setOpen(true) : undefined}>
+        <img src={src} alt={label || 'execução do exercício'} loading="lazy" onError={() => setBad((b) => ({ ...b, [src]: true }))} />
+        {animated && <span className="loop-badge">LOOP</span>}
+        {label && <span className="tagpos">{label}</span>}
+        {zoomable && <span className="demo-expand" aria-hidden>⛶</span>}
+      </div>
+
+      {open && (
+        <div className="demo-fs" onClick={() => setOpen(false)}>
+          <button className="demo-fs-x" onClick={() => setOpen(false)} aria-label="Sair da tela cheia">✕</button>
+          <img className="demo-fs-img" src={src} alt={label || 'execução do exercício'} onClick={(e) => e.stopPropagation()} />
+          <div className="demo-fs-bar" onClick={(e) => e.stopPropagation()}>
+            <button className="demo-fs-play" onClick={() => setPlaying((p) => !p)}>{playing ? '⏸' : '▶'}</button>
+            <div className="demo-fs-speeds">
+              {[[1, '1x'], [0.75, '0.75x'], [0.5, '0.5x']].map(([v, l]) => (
+                <button key={l} className={`spd ${mult === v ? 'on' : ''}`} onClick={() => setMult(v)}>{l}</button>
+              ))}
+            </div>
+          </div>
+          <div className="demo-fs-hint">Gire o celular para ver em paisagem 🔄</div>
+        </div>
+      )}
+    </>
   );
 }

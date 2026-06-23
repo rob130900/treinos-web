@@ -45,6 +45,12 @@ export const api = {
   deletePayment: (id) => request(`/api/payments/${id}`, { method: 'DELETE' }),
   duplicateWorkout: (id, studentId) => request(`/api/workouts/${id}/duplicate`, { method: 'POST', body: studentId ? { student_id: studentId } : {} }),
 
+  // Exercícios personalizados do personal
+  listCustomEx: () => request('/api/custom-exercises'),
+  createCustomEx: (payload) => request('/api/custom-exercises', { method: 'POST', body: payload }),
+  updateCustomEx: (id, payload) => request(`/api/custom-exercises/${id}`, { method: 'PUT', body: payload }),
+  deleteCustomEx: (id) => request(`/api/custom-exercises/${id}`, { method: 'DELETE' }),
+
   createWorkout: (payload) => request('/api/workouts', { method: 'POST', body: payload }),
   updateWorkout: (id, payload) => request(`/api/workouts/${id}`, { method: 'PUT', body: payload }),
   linkTrainer: (invite_code) => request('/api/auth/link-trainer', { method: 'POST', body: { invite_code } }),
