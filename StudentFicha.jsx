@@ -36,6 +36,11 @@ export default function StudentFicha({ student, onClose, onSaved }) {
             <label className="evo-field"><span>Nascimento</span><input type="date" value={f.birth_date} onChange={(e) => setF({ ...f, birth_date: e.target.value })} /></label>
             <label className="evo-field"><span>Mensalidade (R$)</span><input inputMode="decimal" value={f.monthly_fee} onChange={(e) => setF({ ...f, monthly_fee: e.target.value })} /></label>
           </div>
+          {Number(f.monthly_fee) > 0 && (
+            <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+              O aluno paga <b>R$ {(Number(f.monthly_fee) + 20).toFixed(2).replace('.', ',')}</b> · você recebe <b>R$ {Number(f.monthly_fee).toFixed(2).replace('.', ',')}</b> · taxa da plataforma R$ 20,00
+            </div>
+          )}
           <label className="evo-field"><span>Objetivo</span><input value={f.goal} placeholder="Ex: hipertrofia, emagrecimento..." onChange={(e) => setF({ ...f, goal: e.target.value })} /></label>
           <label className="evo-field"><span>Observações</span><textarea rows={3} value={f.student_notes} onChange={(e) => setF({ ...f, student_notes: e.target.value })} /></label>
           <button className="btn" disabled={saving} onClick={save}>{saving ? 'Salvando...' : 'Salvar ficha'}</button>

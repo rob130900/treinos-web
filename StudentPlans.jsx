@@ -17,7 +17,7 @@ export default function StudentPlans({ planInfo, onClose, onChange, paywall, onL
   async function subscribe() {
     setBusy(true); setError('');
     try {
-      const r = await api.checkoutPlan({ plan: sel.key, cpfCnpj: cpf.replace(/\D/g, '') });
+      const r = await api.checkoutPlan({ plan: sel?.key, cpfCnpj: cpf.replace(/\D/g, '') });
       if (r.mode === 'test') {
         // Modo teste (sem Asaas): libera na hora
         onChange && onChange();
@@ -53,24 +53,26 @@ export default function StudentPlans({ planInfo, onClose, onChange, paywall, onL
                 🎁 Você tem <b>{planInfo.daysLeft}</b> {planInfo.daysLeft === 1 ? 'dia' : 'dias'} de teste grátis. Assine para não perder o acesso.
               </div>
             )}
-            <div className="plan-grid">
-              {planInfo?.plans?.map((p) => {
-                const featured = p.key === 'trimestral';
-                return (
-                  <div key={p.key} className={`plan-card ${featured ? 'featured' : ''}`}>
-                    {p.badge && <span className="plan-badge">{p.badge}</span>}
-                    <div className="plan-name">{p.name}</div>
-                    <div className="plan-price">{brl(p.price)}</div>
-                    <div className="plan-limit">{p.days} dias de acesso</div>
-                    <div className="plan-desc">{p.desc}</div>
-                    <button className={`btn ${featured ? '' : 'btn-outline'}`} onClick={() => pick(p)}>Assinar agora</button>
+            {planInfo?.hasMensalidade ? (
+              <>
+                <div className="plan-grid">
+                  <div className="plan-card featured">
+                    <div className="plan-name">Mensalidade</div>
+                    <div className="plan-price">{brl(planInfo.total)}</div>
+                    <div className="plan-limit">Acesso completo · renova todo mês</div>
+                    <div className="plan-desc">Treinos, evolução e suporte do seu personal.</div>
+                    <button className="btn" onClick={() => pick({ name: 'Mensalidade', price: planInfo.total, days: 30 })}>Assinar agora</button>
                   </div>
-                );
-              })}
-            </div>
-            <p className="muted" style={{ fontSize: 11.5, textAlign: 'center', marginTop: 12 }}>
-              Pagamento seguro via Asaas — PIX, cartão ou boleto.
-            </p>
+                </div>
+                <p className="muted" style={{ fontSize: 11.5, textAlign: 'center', marginTop: 12 }}>
+                  Pagamento seguro via Asaas — PIX, cartão ou boleto.
+                </p>
+              </>
+            ) : (
+              <div className="trial-banner" style={{ marginTop: 10 }}>
+                Seu personal ainda não definiu o valor da sua mensalidade. Fale com ele para liberar o pagamento.
+              </div>
+            )}
             {paywall && onLogout && (
               <button className="btn-ghost" style={{ marginTop: 12, width: '100%' }} onClick={onLogout}>Sair</button>
             )}
@@ -80,8 +82,8 @@ export default function StudentPlans({ planInfo, onClose, onChange, paywall, onL
         {step === 'pay' && sel && (
           <>
             <div className="pay-summary">
-              <div><b>Plano {sel.name}</b> · {brl(sel.price)}</div>
-              <div className="muted" style={{ fontSize: 12 }}>{sel.days} dias de acesso completo</div>
+              <div><b>{sel.name}</b> · {brl(sel.price)}</div>
+              <div className="muted" style={{ fontSize: 12 }}>Acesso completo aos seus treinos</div>
             </div>
             <div className="fb-label">CPF ou CNPJ</div>
             <input placeholder="Somente números" value={cpf} onChange={(e) => setCpf(e.target.value)} inputMode="numeric" />

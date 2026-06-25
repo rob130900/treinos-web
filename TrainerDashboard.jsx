@@ -224,7 +224,7 @@ export default function TrainerDashboard() {
 
 function AddStudent({ onAdded, setError }) {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', monthly_fee: '' });
   const [loading, setLoading] = useState(false);
 
   async function submit(e) {
@@ -232,10 +232,12 @@ function AddStudent({ onAdded, setError }) {
     setLoading(true); setError('');
     try {
       await api.createStudent(form);
-      setForm({ name: '', email: '', password: '' });
+      setForm({ name: '', email: '', password: '', monthly_fee: '' });
       setOpen(false); onAdded();
     } catch (err) { setError(err.message); } finally { setLoading(false); }
   }
+
+  const fee = Number(form.monthly_fee) || 0;
 
   if (!open) return <button className="btn-sm" style={{ marginTop: 12 }} onClick={() => setOpen(true)}>+ Cadastrar aluno</button>;
 
@@ -244,6 +246,12 @@ function AddStudent({ onAdded, setError }) {
       <input placeholder="Nome do aluno" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
       <input type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
       <input type="password" placeholder="Senha (o aluno usa para entrar)" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={4} />
+      <input inputMode="decimal" placeholder="Mensalidade que você recebe (R$)" value={form.monthly_fee} onChange={(e) => setForm({ ...form, monthly_fee: e.target.value })} />
+      {fee > 0 && (
+        <div className="muted" style={{ fontSize: 12, marginTop: -2 }}>
+          O aluno paga <b>R$ {(fee + 20).toFixed(2).replace('.', ',')}</b> · você recebe <b>R$ {fee.toFixed(2).replace('.', ',')}</b> · taxa da plataforma R$ 20,00
+        </div>
+      )}
       <div className="row">
         <button className="btn-sm" disabled={loading}>{loading ? 'Salvando...' : 'Salvar'}</button>
         <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>Cancelar</button>
