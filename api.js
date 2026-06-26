@@ -36,6 +36,7 @@ export const api = {
   upgradePlan: (plan) => request('/api/plan/upgrade', { method: 'POST', body: { plan } }),
   checkoutPlan: (payload) => request('/api/plan/checkout', { method: 'POST', body: payload }),
   cancelPlan: () => request('/api/plan/cancel', { method: 'POST' }),
+  connectAsaas: (payload) => request('/api/plan/connect', { method: 'POST', body: payload }),
 
   // CRM financeiro
   paymentsSummary: () => request('/api/payments/summary'),

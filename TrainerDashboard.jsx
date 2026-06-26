@@ -96,6 +96,8 @@ export default function TrainerDashboard() {
         </div>
       )}
 
+      <ConnectPayout />
+
       {alerts.length > 0 && (
         <div className="alerts-card">
           <div className="alerts-head">🔔 Alertas inteligentes ({alerts.length})</div>
@@ -219,6 +221,84 @@ export default function TrainerDashboard() {
         </section>
       </div>
     </div>
+  );
+}
+
+// Conectar recebimento: cria a subconta Asaas do personal (walletId) p/ receber
+// a mensalidade direto via split. Só aparece quando o pagamento (Asaas) está ativo.
+function ConnectPayout() {
+  const [info, setInfo] = useState(null);     // { connected, walletId } | null
+  const [paymentOn, setPaymentOn] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [f, setF] = useState({ cpfCnpj: '', mobilePhone: '', incomeValue: '', postalCode: '', address: '', addressNumber: '', province: '', companyType: '' });
+
+  async function load() {
+    try {
+      const p = await api.getPlan();
+      setInfo({ connected: !!p.connected, walletId: p.walletId || null });
+      setPaymentOn(!!p.paymentActive);
+    } catch { /* */ }
+  }
+  useEffect(() => { load(); }, []);
+
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true); setError('');
+    try {
+      const payload = { ...f };
+      if (!payload.companyType) delete payload.companyType;
+      const r = await api.connectAsaas(payload);
+      setInfo({ connected: true, walletId: r.walletId }); setOpen(false);
+    } catch (err) { setError(err.message); } finally { setBusy(false); }
+  }
+
+  if (!info) return null;
+  // Em modo teste (sem Asaas), não mostra o card — só quando o pagamento está ativo.
+  if (!info.connected && !paymentOn) return null;
+
+  if (info.connected) {
+    return (
+      <div className="invite-card" style={{ borderColor: 'rgba(46,204,113,.4)' }}>
+        <div>
+          <div className="invite-lbl">💰 Recebimento conectado</div>
+          <div className="dim" style={{ fontSize: 12 }}>A mensalidade dos seus alunos cai direto na sua carteira.</div>
+        </div>
+        <span className="btn-mini" style={{ pointerEvents: 'none' }}>✓ Ativo</span>
+      </div>
+    );
+  }
+
+  if (!open) {
+    return (
+      <div className="invite-card">
+        <div>
+          <div className="invite-lbl">💰 Conectar recebimento</div>
+          <div className="dim" style={{ fontSize: 12 }}>Receba a mensalidade dos alunos direto na sua conta. (Pagamento real)</div>
+        </div>
+        <button className="btn-mini" onClick={() => setOpen(true)}>Conectar</button>
+      </div>
+    );
+  }
+
+  return (
+    <form className="inline-form" onSubmit={submit} style={{ marginTop: 8 }}>
+      <div className="invite-lbl" style={{ marginBottom: 4 }}>Dados para receber (Asaas)</div>
+      {error && <div className="alert">{error}</div>}
+      <input placeholder="CPF ou CNPJ (só números)" value={f.cpfCnpj} onChange={(e) => setF({ ...f, cpfCnpj: e.target.value })} required />
+      <input placeholder="Celular com DDD" value={f.mobilePhone} onChange={(e) => setF({ ...f, mobilePhone: e.target.value })} required />
+      <input inputMode="decimal" placeholder="Faturamento/renda mensal (R$)" value={f.incomeValue} onChange={(e) => setF({ ...f, incomeValue: e.target.value })} required />
+      <input placeholder="CEP" value={f.postalCode} onChange={(e) => setF({ ...f, postalCode: e.target.value })} required />
+      <input placeholder="Endereço (rua)" value={f.address} onChange={(e) => setF({ ...f, address: e.target.value })} required />
+      <input placeholder="Número" value={f.addressNumber} onChange={(e) => setF({ ...f, addressNumber: e.target.value })} required />
+      <input placeholder="Bairro" value={f.province} onChange={(e) => setF({ ...f, province: e.target.value })} required />
+      <input placeholder="Tipo empresa (CNPJ): MEI / LIMITED / INDIVIDUAL (deixe vazio se CPF)" value={f.companyType} onChange={(e) => setF({ ...f, companyType: e.target.value })} />
+      <div className="row">
+        <button className="btn-sm" disabled={busy}>{busy ? 'Conectando...' : 'Conectar recebimento'}</button>
+        <button type="button" className="btn-ghost" onClick={() => setOpen(false)}>Cancelar</button>
+      </div>
+    </form>
   );
 }
 
