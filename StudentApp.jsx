@@ -10,6 +10,7 @@ import WelcomeBanner from './WelcomeBanner.jsx';
 import StudentPlans from './StudentPlans.jsx';
 import WorkoutPlayer from './WorkoutPlayer.jsx';
 import { IcoHome, IcoDumbbell, IcoHistory, IcoChat, IcoChart, IcoLogout } from './Icons.jsx';
+import KivoLogo from './KivoLogo.jsx';
 
 export default function StudentApp() {
   const { user, logout, refreshUser } = useAuth();
@@ -44,7 +45,7 @@ export default function StudentApp() {
     return (
       <div className="app-shell">
         <header className="app-top">
-          <span className="kivo" style={{ fontSize: 22 }}>KI<span className="v">V</span>O</span>
+          <KivoLogo size={26} />
         </header>
         <StudentPlans planInfo={plan} paywall onChange={loadPlan} onLogout={logout} />
       </div>
@@ -64,7 +65,7 @@ export default function StudentApp() {
   return (
     <div className="app-shell">
       <header className="app-top">
-        <span className="kivo" style={{ fontSize: 22 }}>KI<span className="v">V</span>O</span>
+        <KivoLogo size={26} />
         <button className="icon-btn" onClick={logout} title="Sair"><IcoLogout width={18} height={18} /></button>
       </header>
 

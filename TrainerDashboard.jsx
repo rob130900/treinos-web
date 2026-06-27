@@ -8,6 +8,7 @@ import TrainerFinance from './TrainerFinance.jsx';
 import StudentFicha from './StudentFicha.jsx';
 import WorkoutEditor from './WorkoutEditor.jsx';
 import CustomExLibrary from './CustomExLibrary.jsx';
+import KivoLogo from './KivoLogo.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -63,7 +64,7 @@ export default function TrainerDashboard() {
     <div className="layout">
       <header className="topbar">
         <div className="topbar-brand">
-          <span className="kivo" style={{ fontSize: 22 }}>KI<span className="v">V</span>O</span>
+          <KivoLogo size={26} />
           <span className="dim" style={{ fontSize: 13 }}>Painel do Personal</span>
         </div>
         <nav className="topbar-actions">

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from './api.js';
 import { useAuth } from './AuthContext.jsx';
+import KivoLogo from './KivoLogo.jsx';
 
 export default function Login() {
   const { saveSession } = useAuth();
@@ -30,8 +31,7 @@ export default function Login() {
     <div className="auth-wrap">
       <form className="auth-card" onSubmit={handleSubmit}>
         <div className="auth-head">
-          <div className="kivo">KI<span className="v">V</span>O</div>
-          <div className="kivo-tag" style={{ marginTop: 8 }}>Treine. <b>Evolua.</b> Repita.</div>
+          <KivoLogo size={60} stack tag />
         </div>
         <h1 style={{ fontSize: 22, textAlign: 'center', margin: '22px 0 4px' }}>Entrar</h1>
 
