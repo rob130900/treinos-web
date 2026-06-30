@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { EXERCISES, GROUPS, VIDEOS } from './exerciseLibrary.js';
+import { loadFullExercises } from './fullLibrary.js';
 import ExerciseDemo from './ExerciseDemo.jsx';
 import { exerciseDisplayName } from './exerciseI18n.js';
 import { api } from './api.js';
@@ -11,9 +12,28 @@ export default function ExercisePicker({ onClose, onConfirm }) {
   const [picked, setPicked] = useState({});
   const [customList, setCustomList] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
+  const [fullEx, setFullEx] = useState([]);
+  const [loadingLib, setLoadingLib] = useState(true);
 
   async function loadCustom() { try { setCustomList((await api.listCustomEx()).exercises || []); } catch { /* */ } }
   useEffect(() => { loadCustom(); }, []);
+
+  // Carrega a biblioteca COMPLETA (free-exercise-db) ao abrir; se falhar, segue com os 90.
+  useEffect(() => {
+    let alive = true;
+    loadFullExercises()
+      .then((list) => { if (alive) setFullEx(list); })
+      .finally(() => { if (alive) setLoadingLib(false); });
+    return () => { alive = false; };
+  }, []);
+
+  // Mescla 90 curados (vencem em conflito: têm vídeo + grupo afinado) + base completa.
+  const allEx = useMemo(() => {
+    const map = new Map();
+    EXERCISES.forEach((e) => map.set(e.id, e));
+    fullEx.forEach((e) => { if (!map.has(e.id)) map.set(e.id, e); });
+    return Array.from(map.values());
+  }, [fullEx]);
 
   // exercícios personalizados normalizados para o mesmo formato
   const customItems = useMemo(() => customList.map((c) => ({
@@ -27,12 +47,12 @@ export default function ExercisePicker({ onClose, onConfirm }) {
     if (group === 'meus') {
       return customItems.filter((e) => !term || e.name.toLowerCase().includes(term));
     }
-    return EXERCISES.filter((e) => {
+    return allEx.filter((e) => {
       if (group !== 'todos' && e.group !== group) return false;
       if (term && !e.name.toLowerCase().includes(term) && !exerciseDisplayName(e.name).toLowerCase().includes(term)) return false;
       return true;
     });
-  }, [q, group, customItems]);
+  }, [q, group, customItems, allEx]);
 
   function toggle(ex) {
     setPicked((p) => {
@@ -71,7 +91,7 @@ export default function ExercisePicker({ onClose, onConfirm }) {
         <div className="modal-head">
           <div>
             <h2 style={{ fontSize: 18 }}>Exercícios</h2>
-            <div className="dim" style={{ fontSize: 12 }}>{EXERCISES.length} na biblioteca + os seus · toque para adicionar</div>
+            <div className="dim" style={{ fontSize: 12 }}>{loadingLib ? 'carregando biblioteca…' : `${allEx.length} exercícios`} + os seus · toque para adicionar</div>
           </div>
           <button className="close-x" onClick={onClose}>✕</button>
         </div>
