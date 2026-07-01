@@ -11,6 +11,7 @@ import StudentPlans from './StudentPlans.jsx';
 import WorkoutPlayer from './WorkoutPlayer.jsx';
 import { IcoHome, IcoDumbbell, IcoHistory, IcoChat, IcoChart, IcoLogout } from './Icons.jsx';
 import KivoLogo from './KivoLogo.jsx';
+import { Help, WelcomeTour } from './Help.jsx';
 
 export default function StudentApp() {
   const { user, logout, refreshUser } = useAuth();
@@ -20,6 +21,7 @@ export default function StudentApp() {
   const [unread, setUnread] = useState(0);
   const [plan, setPlan] = useState(null);
   const [showPlans, setShowPlans] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   function openPlayer(id) { if (id) setPlayerId(id); }
   function closePlayer(done) {
@@ -66,7 +68,10 @@ export default function StudentApp() {
     <div className="app-shell">
       <header className="app-top">
         <KivoLogo size={26} />
-        <button className="icon-btn" onClick={logout} title="Sair"><IcoLogout width={18} height={18} /></button>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button className="icon-btn" onClick={() => setShowHelp(true)} title="Ajuda" style={{ fontWeight: 800, fontSize: 16 }}>?</button>
+          <button className="icon-btn" onClick={logout} title="Sair"><IcoLogout width={18} height={18} /></button>
+        </div>
       </header>
 
       <main className="app-main">
@@ -104,6 +109,9 @@ export default function StudentApp() {
           </button>
         ))}
       </nav>
+
+      {showHelp && <Help role="student" onClose={() => setShowHelp(false)} />}
+      <WelcomeTour role="student" />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import StudentFicha from './StudentFicha.jsx';
 import WorkoutEditor from './WorkoutEditor.jsx';
 import CustomExLibrary from './CustomExLibrary.jsx';
 import KivoLogo from './KivoLogo.jsx';
+import { Help, WelcomeTour } from './Help.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -26,6 +27,7 @@ export default function TrainerDashboard() {
   const [copied, setCopied] = useState(false);
   const [editWorkoutId, setEditWorkoutId] = useState(null);
   const [showCustomEx, setShowCustomEx] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   async function loadComm() {
     try { setUnread((await api.unreadCount()).unread || 0); } catch { /* */ }
@@ -76,6 +78,7 @@ export default function TrainerDashboard() {
           <button className="btn-ghost" onClick={downloadBackup} disabled={exporting} title="Baixar todos os dados em SQL (backup / migração)">
             {exporting ? 'Gerando...' : '⬇ Backup'}
           </button>
+          <button className="btn-ghost" onClick={() => setShowHelp(true)} title="Ajuda e tutorial">❓ Ajuda</button>
         </nav>
         <div className="topbar-user">
           <span className="muted" style={{ fontSize: 13 }}>{user.name}</span>
@@ -84,6 +87,9 @@ export default function TrainerDashboard() {
       </header>
 
       {error && <div className="alert">{error}</div>}
+
+      {showHelp && <Help role="trainer" onClose={() => setShowHelp(false)} />}
+      <WelcomeTour role="trainer" />
 
       {user?.invite_code && (
         <div className="invite-card">
