@@ -7,6 +7,7 @@ import MuscleMap from './MuscleMap.jsx';
 import { musclesFor, MUSCLE_PT } from './muscleData.js';
 import { exerciseDisplayName } from './exerciseI18n.js';
 import { imagesForName } from './exerciseMedia.js';
+import { artFor } from './exerciseArt.js';
 import { IcoClose, IcoCheck, IcoNext, IcoPrev, IcoClock } from './Icons.jsx';
 
 function mmss(s) {
@@ -89,9 +90,10 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
   const allDone = total > 0 && completedCount === total;
   const cur = ex[idx];
   const curName = cur ? exerciseDisplayName(cur.name) : '';
+  const curArt = cur ? artFor(cur.name) : null;
   const curFallback = cur ? imagesForName(cur.name) : [];
-  const curImg1 = cur ? (cur.image_url || curFallback[0]) : null;
-  const curImg2 = cur ? (cur.image_url2 || curFallback[1]) : null;
+  const curImg1 = cur ? (curArt?.[0] || cur.image_url || curFallback[0]) : null;
+  const curImg2 = cur ? (curArt?.[1] || cur.image_url2 || curFallback[1]) : null;
 
   function markCurrent() {
     const e = cur;
