@@ -12,6 +12,7 @@ import WorkoutPlayer from './WorkoutPlayer.jsx';
 import { IcoHome, IcoDumbbell, IcoHistory, IcoChat, IcoChart, IcoLogout } from './Icons.jsx';
 import KivoLogo from './KivoLogo.jsx';
 import { Help, WelcomeTour } from './Help.jsx';
+import Badge from './Badge.jsx';
 
 export default function StudentApp() {
   const { user, logout, refreshUser } = useAuth();
@@ -76,7 +77,7 @@ export default function StudentApp() {
 
       <main className="app-main">
         {user?.trainer_name
-          ? <div className="coach-line">Acompanhado por <b>{user.trainer_name}</b></div>
+          ? <div className="coach-line">Acompanhado por <b>{user.trainer_name}</b><Badge label={user.trainer_badge} /></div>
           : !user?.trainer_id && <LinkTrainerCard onLinked={refreshUser} />}
         {plan?.isTrial && (
           <div className="trial-banner" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

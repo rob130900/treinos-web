@@ -10,6 +10,7 @@ import WorkoutEditor from './WorkoutEditor.jsx';
 import CustomExLibrary from './CustomExLibrary.jsx';
 import KivoLogo from './KivoLogo.jsx';
 import { Help, WelcomeTour } from './Help.jsx';
+import Badge from './Badge.jsx';
 
 export default function TrainerDashboard() {
   const { user, logout } = useAuth();
@@ -82,6 +83,7 @@ export default function TrainerDashboard() {
         </nav>
         <div className="topbar-user">
           <span className="muted" style={{ fontSize: 13 }}>{user.name}</span>
+          <Badge label={user.badge} />
           <button className="btn-ghost" onClick={logout}>Sair</button>
         </div>
       </header>
