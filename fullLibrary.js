@@ -51,6 +51,8 @@ function mapExercise(raw) {
     level: raw.level || 'beginner',
     images: Array.isArray(raw.images) ? raw.images.map((p) => IMG_BASE + p) : [],
     instructions: Array.isArray(raw.instructions) ? raw.instructions : [],
+    primaryMuscles: Array.isArray(raw.primaryMuscles) ? raw.primaryMuscles : [],
+    secondaryMuscles: Array.isArray(raw.secondaryMuscles) ? raw.secondaryMuscles : [],
   };
 }
 

@@ -3,6 +3,8 @@ import { api } from './api.js';
 import ExerciseDemo from './ExerciseDemo.jsx';
 import VideoDemo from './VideoDemo.jsx';
 import ExerciseInfo from './ExerciseInfo.jsx';
+import MuscleMap from './MuscleMap.jsx';
+import { musclesFor, MUSCLE_PT } from './muscleData.js';
 import { exerciseDisplayName } from './exerciseI18n.js';
 import { imagesForName } from './exerciseMedia.js';
 import { IcoClose, IcoCheck, IcoNext, IcoPrev, IcoClock } from './Icons.jsx';
@@ -10,6 +12,30 @@ import { IcoClose, IcoCheck, IcoNext, IcoPrev, IcoClock } from './Icons.jsx';
 function mmss(s) {
   const m = Math.floor(s / 60), x = s % 60;
   return `${String(m).padStart(2, '0')}:${String(x).padStart(2, '0')}`;
+}
+
+// Mapa de músculos ativados do exercício atual (vermelho = principal, laranja = secundário)
+function MuscleBlock({ ex }) {
+  const mus = musclesFor(ex);
+  if (!mus.primary.length && !mus.secondary.length) return null;
+  const chip = (m, cls) => (
+    <span key={cls + m} style={{
+      fontSize: 12, fontWeight: 700, padding: '5px 10px', borderRadius: 8,
+      ...(cls === 'r'
+        ? { background: 'rgba(255,59,59,.15)', color: '#ff7a7a', border: '1px solid rgba(255,59,59,.35)' }
+        : { background: 'rgba(255,106,26,.15)', color: '#ffa866', border: '1px solid rgba(255,106,26,.35)' }),
+    }}>{MUSCLE_PT[m] || m}</span>
+  );
+  return (
+    <div style={{ margin: '2px 0 8px' }}>
+      <div style={{ fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: '#8b93a1', marginBottom: 8, textAlign: 'center' }}>Músculos ativados</div>
+      <MuscleMap primary={mus.primary} secondary={mus.secondary} height={180} />
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginTop: 10 }}>
+        {mus.primary.map((m) => chip(m, 'r'))}
+        {mus.secondary.map((m) => chip(m, 'o'))}
+      </div>
+    </div>
+  );
 }
 
 export default function WorkoutPlayer({ workoutId, onClose }) {
@@ -167,6 +193,8 @@ export default function WorkoutPlayer({ workoutId, onClose }) {
             <div className="es"><b>{cur.weight || '-'}</b><small>carga</small></div>
             <div className="es"><b>{cur.rest_seconds || 60}s</b><small>descanso</small></div>
           </div>
+
+          <MuscleBlock ex={cur} />
 
           <ExerciseInfo name={cur.name} instructions={cur.instructions} />
 
